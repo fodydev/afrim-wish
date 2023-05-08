@@ -1,0 +1,46 @@
+name: Rust
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, release-*]
+  pull_request:
+    branches: [main, release-*]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ${{matrix.os}}
+    env:
+      DISPLAY: ':99'
+    strategy:
+      fail-fast: false
+      matrix: 
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        include:
+        - os: ubuntu-latest
+          headless: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        - os: ubuntu-latest
+          dependencies: sudo apt-get install libxtst-dev libevdev-dev libxdo-dev  --assume-yes
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Add components
+        run: rustup component add clippy rustfmt
+      - name: Dependencies
+        run: ${{matrix.dependencies}}
+      - name: Setup headless environment
+        run: ${{matrix.headless}}
+
+      - name: Rustfmt
+        run: |
+          cargo fmt -- --check
+
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+      
+      - name: Build
+        run: cargo build --all-features --verbose

@@ -1,0 +1,16 @@
+[package]
+name = "clafrica-wish"
+version = "0.1.0"
+edition = "2021"
+description = "Wish interface for the clafrica."
+repository = "https://github.com/pythonbrad/clafrica"
+license = "MIT"
+readme = "README.md"
+authors = ["Fomegne Brady <fomegnemeudje@outlook.com>"]
+keywords = ["african", "ime", "typing"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clafrica = "0.2.0"
+rstk = "0.1.0"
