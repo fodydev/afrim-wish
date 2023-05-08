@@ -4,4 +4,4 @@
 [![LICENSE](https://img.shields.io/crates/l/clafrica-wish.svg)](https://github.com/pythonbrad/clafrica-wish/blob/main/LICENSE)
 ![Rust](https://github.com/pythonbrad/clafrica-wish/workflows/Rust/badge.svg)
 
-Clafrica Wish is a frontend alternative for the clafrica.
+Clafrica Wish is a frontend alternative for the [clafrica](https://github.com/pythonbrad/clafrica).
