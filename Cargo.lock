@@ -33,7 +33,7 @@ checksum = "c6c95e9df81db5a18471ca28d1a693f417c0a5fdcbde90ab9438c16ebba6f0c3"
 
 [[package]]
 name = "clafrica-wish"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "clafrica",
  "rstk",
