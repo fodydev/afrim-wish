@@ -69,7 +69,8 @@ impl api::Frontend for Wish {
     fn update_position(&mut self, position: (f64, f64)) {
         {
             let wish_obj = &self.window.id;
-            let (x, y) = position;
+            let x = (position.0 + self.border) as u64;
+            let y = (position.1 + self.border) as u64;
             rstk::tell_wish(&format!("wm geometry {wish_obj} +{x}+{y}"));
         }
     }
