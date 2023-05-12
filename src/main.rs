@@ -1,3 +1,5 @@
+#![windows_subsystem = "windows"]
+
 use clafrica::{run, Config};
 use clafrica_wish::Wish;
 use std::{env, process};

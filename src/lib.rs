@@ -25,7 +25,7 @@ impl Wish {
                 r#"
                 wm overrideredirect {wish_obj} 1;
                 wm attributes {wish_obj} -topmost 1;
-                bind {wish_obj} <Button-1> {{destroy .; exit;}};
+                bind {wish_obj} <Motion> {{destroy .; exit;}};
             "#
             ));
         }
@@ -76,12 +76,16 @@ impl api::Frontend for Wish {
     }
 
     fn update_text(&mut self, text: Vec<char>) {
-        self.label.text(
-            &text
-                .into_iter()
-                .map(|c| c.to_string())
-                .collect::<Vec<_>>()
-                .join(""),
-        );
+        let text = text
+            .into_iter()
+            .map(|c| c.to_string())
+            .collect::<Vec<_>>()
+            .join("");
+
+        self.label.text(&text);
+
+        if text == "_exit_" {
+            rstk::end_wish();
+        }
     }
 }
