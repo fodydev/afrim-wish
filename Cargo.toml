@@ -1,6 +1,6 @@
 [package]
 name = "clafrica-wish"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 description = "Wish interface for the clafrica."
 repository = "https://github.com/pythonbrad/clafrica"
