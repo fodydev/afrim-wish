@@ -33,7 +33,7 @@ Usage
 
   To use the clafrica wish, simply provide the path of the datafile that suit your needs.
   
-  Eg. `clafrica-wish clafrica_code.txt`
+  Eg. `clafrica-wish configfile.toml`
 
 Contributing
 ===
