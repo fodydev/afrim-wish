@@ -128,7 +128,7 @@ impl api::Frontend for Wish {
             label.text(&text);
         }
 
-        let predictions = ["nde3n", "nde3", "nde22"];
+        let predictions = ["Wish"];
 
         self.prediction_frame.as_ref().map(TkWidget::destroy);
 

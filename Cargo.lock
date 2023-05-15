@@ -22,13 +22,15 @@ checksum = "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a"
 
 [[package]]
 name = "clafrica"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b173b4a23ce0b260c2c6307c1e6de002ce5ec5911ba98723d8472cffdb37cb2a"
+checksum = "0fff0323c343637921a48fbf28f1e7d340dd49cf57c235c1f11669c2d83bc649"
 dependencies = [
  "clafrica-lib",
  "enigo",
  "rdev",
+ "serde",
+ "toml",
 ]
 
 [[package]]

@@ -1,16 +1,21 @@
 #![windows_subsystem = "windows"]
 
-use clafrica::{run, Config as ClafricaConfig};
+use clafrica::{prelude::Config as ClafricaConfig, run};
 use clafrica_wish::{prelude::Config as WishConfig, Wish};
-use std::{env, process};
+use std::{env, path::Path, process};
 
 fn main() {
-    let clafrica_conf = ClafricaConfig::build(env::args()).unwrap_or_else(|err| {
-        eprintln!("Problem parsing arguments: {err}");
+    let filename = env::args().nth(1).unwrap_or_else(|| {
+        eprintln!("Configuration file required");
         process::exit(1);
     });
 
-    let wish_conf = WishConfig::from_file("./data/wish.toml").unwrap_or_else(|err| {
+    let clafrica_conf = ClafricaConfig::from_file(Path::new(&filename)).unwrap_or_else(|err| {
+        eprintln!("Problem parsing config file: {err}");
+        process::exit(1);
+    });
+
+    let wish_conf = WishConfig::from_file(Path::new(&filename)).unwrap_or_else(|err| {
         eprintln!("Problem parsing config file: {err}");
         process::exit(1);
     });

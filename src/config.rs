@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use std::{error, fs};
+use std::{error, fs, path::Path};
 use toml::{self};
 
 #[derive(Deserialize, Debug)]
@@ -28,7 +28,7 @@ pub struct ThemeFont {
 }
 
 impl Config {
-    pub fn from_file(filename: &str) -> Result<Self, Box<dyn error::Error>> {
+    pub fn from_file(filename: &Path) -> Result<Self, Box<dyn error::Error>> {
         let data = fs::read_to_string(filename)?;
         let config: Self = toml::from_str(&data)?;
         Ok(config)
@@ -40,8 +40,9 @@ mod tests {
     #[test]
     fn from_file() {
         use crate::config::Config;
+        use std::path::Path;
 
-        let config = Config::from_file("./data/sample.toml");
+        let config = Config::from_file(Path::new("./data/sample.toml"));
         assert!(config.is_ok());
     }
 }
