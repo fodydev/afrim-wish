@@ -48,3 +48,6 @@ jobs:
       
       - name: Build
         run: cargo build --all-features --verbose
+
+      - name: Test
+        run: cargo test --all-features --verbose

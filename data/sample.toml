@@ -1,0 +1,7 @@
+[theme]
+header.background = "#252320"
+header.foreground = "#dedddd"
+header.font = { family = "Charis-SIL", size = 12, weight = "bold" }
+body.background = "#dedddd"
+body.foreground = "#252320"
+body.font = { family = "Charis-SIL", size = 10, weight = "bold" }
