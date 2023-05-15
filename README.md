@@ -20,7 +20,7 @@ Build dependencies (Linux only)
   - libevdev-dev
   - libxdo-dev
 
-Runtime dependencies (Linux only)
+Runtime dependencies
 ---
   - Wish 8.6+ (tcl/tk)
 
