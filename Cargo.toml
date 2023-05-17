@@ -1,6 +1,6 @@
 [package]
 name = "clafrica-wish"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 description = "Wish interface for the clafrica."
 repository = "https://github.com/pythonbrad/clafrica"
@@ -12,7 +12,7 @@ keywords = ["african", "ime", "typing"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clafrica = "0.2.1"
+clafrica = "0.2.2"
 rstk = "0.1.0"
 serde = { version = "1.0.163", features = ["serde_derive"] }
 toml = "0.7.3"
