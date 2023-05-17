@@ -11,24 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update the dependencies
+- Update the dependencies [(#15)](https://github.com/pythonbrad/clafrica-wish/pull/15)
 
 ## [0.2.0] - 2023-05-15
 
 ### Added
 
-- Implement a config file to customize the application (#31)
-- Hide the console who was not user friendly (#9)
+- Implement a config file to customize the application [(#10)](https://github.com/pythonbrad/clafrica-wish/pull/10)
+- Hide the console who was not user friendly [(#9)](https://github.com/pythonbrad/clafrica-wish/pull/9)
 
 ### Changed
 
-- Update the clafrica backend (#31)
+- Update the clafrica backend [(#10)](https://github.com/pythonbrad/clafrica-wish/pull/10)
 
 ## [0.1.1] - 2023-05-09
 
 ### Fixed
 
-- Tooltip too close of the mouse because border was not applied (#2)
+- Tooltip too close of the mouse because border was not applied [(#2)](https://github.com/pythonbrad/clafrica-wish/pull/2)
 
 ## [0.1.0] - 2023-05-08
 
