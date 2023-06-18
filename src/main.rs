@@ -1,4 +1,4 @@
-#![windows_subsystem = "windows"]
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use clafrica::{prelude::Config as ClafricaConfig, run};
 use clafrica_wish::{prelude::Config as WishConfig, Wish};

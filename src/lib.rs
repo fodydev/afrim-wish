@@ -20,7 +20,11 @@ pub struct Wish {
 
 impl Wish {
     pub fn init(config: config::Config) -> Self {
-        let wish = rstk::start_wish().unwrap();
+        let wish = if cfg!(debug_assertions) {
+            rstk::trace_with("wish").unwrap()
+        } else {
+            rstk::start_wish().unwrap()
+        };
 
         let mut theme = HashMap::new();
 
@@ -113,19 +117,15 @@ impl api::Frontend for Wish {
         }
     }
 
-    fn update_text(&mut self, text: Vec<char>) {
-        let text = text
-            .into_iter()
-            .map(|c| c.to_string())
-            .collect::<Vec<_>>()
-            .join("");
+    fn update_text(&mut self, input: Vec<char>) {
+        let input = input.into_iter().filter(|c| *c != '\0').collect::<String>();
 
-        if text == "_exit_" {
+        if input == "_exit_" {
             rstk::end_wish();
         }
 
         if let Some(label) = self.label.as_ref() {
-            label.text(&text);
+            label.text(&input);
         }
 
         let predictions = ["Wish"];
