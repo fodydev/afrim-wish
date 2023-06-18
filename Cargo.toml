@@ -3,7 +3,7 @@ name = "clafrica-wish"
 version = "0.2.1"
 edition = "2021"
 description = "Wish interface for the clafrica."
-repository = "https://github.com/pythonbrad/clafrica"
+repository = "https://github.com/pythonbrad/clafrica-wish"
 license = "MIT"
 readme = "README.md"
 authors = ["Fomegne Brady <fomegnemeudje@outlook.com>"]
@@ -13,6 +13,7 @@ keywords = ["african", "ime", "typing"]
 
 [dependencies]
 clafrica = "0.3.0"
+enigo = "0.1.2"
 rstk = "0.1.0"
 serde = { version = "1.0.163", features = ["serde_derive"] }
 toml = "0.7.3"

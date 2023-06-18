@@ -1,5 +1,10 @@
 use rstk::*;
 
+pub fn init_rstk_ext() {
+    // We create some useful tcl functions
+    rstk::tell_wish("chan configure stdin -encoding utf-8");
+}
+
 #[derive(Debug)]
 pub struct Style {
     pub name: &'static str,

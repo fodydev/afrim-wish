@@ -44,6 +44,7 @@ name = "clafrica-wish"
 version = "0.2.1"
 dependencies = [
  "clafrica",
+ "enigo",
  "rstk",
  "serde",
  "toml",

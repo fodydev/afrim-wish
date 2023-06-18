@@ -2,6 +2,7 @@ mod config;
 mod rstk_ext;
 
 use clafrica::api;
+use enigo::{Enigo, Key, KeyboardControllable};
 use rstk::*;
 use rstk_ext::*;
 use std::collections::HashMap;
@@ -16,6 +17,8 @@ pub struct Wish {
     prediction_frame: Option<TkFrame>,
     window: rstk::TkTopLevel,
     theme: HashMap<&'static str, Style>,
+    suggestions: HashMap<String, String>,
+    keyboard: Enigo,
 }
 
 impl Wish {
@@ -26,51 +29,57 @@ impl Wish {
             rstk::start_wish().unwrap()
         };
 
+        init_rstk_ext();
+
+        let suggestions = config.extract_suggestions();
+
         let mut theme = HashMap::new();
 
-        let header_frame_style = Style {
-            name: "header.TFrame",
-            background: config.theme.header.background.to_owned(),
-            foreground: "".to_owned(),
-            font_size: 0,
-            font_family: "".to_owned(),
-            font_weight: "".to_owned(),
-        };
-        header_frame_style.update();
-        theme.insert("HFrame", header_frame_style);
+        if let Some(theme_config) = config.theme {
+            let header_frame_style = Style {
+                name: "header.TFrame",
+                background: theme_config.header.background.to_owned(),
+                foreground: "".to_owned(),
+                font_size: 0,
+                font_family: "".to_owned(),
+                font_weight: "".to_owned(),
+            };
+            header_frame_style.update();
+            theme.insert("HFrame", header_frame_style);
 
-        let header_label_style = Style {
-            name: "header.TLabel",
-            background: config.theme.header.background,
-            foreground: config.theme.header.foreground,
-            font_size: config.theme.header.font.size,
-            font_family: config.theme.header.font.family,
-            font_weight: config.theme.header.font.weight,
-        };
-        header_label_style.update();
-        theme.insert("HLabel", header_label_style);
+            let header_label_style = Style {
+                name: "header.TLabel",
+                background: theme_config.header.background,
+                foreground: theme_config.header.foreground,
+                font_size: theme_config.header.font.size,
+                font_family: theme_config.header.font.family,
+                font_weight: theme_config.header.font.weight,
+            };
+            header_label_style.update();
+            theme.insert("HLabel", header_label_style);
 
-        let body_frame_style = Style {
-            name: "body.TFrame",
-            background: config.theme.body.background.to_owned(),
-            foreground: "".to_owned(),
-            font_size: 0,
-            font_family: "".to_owned(),
-            font_weight: "".to_owned(),
-        };
-        body_frame_style.update();
-        theme.insert("BFrame", body_frame_style);
+            let body_frame_style = Style {
+                name: "body.TFrame",
+                background: theme_config.body.background.to_owned(),
+                foreground: "".to_owned(),
+                font_size: 0,
+                font_family: "".to_owned(),
+                font_weight: "".to_owned(),
+            };
+            body_frame_style.update();
+            theme.insert("BFrame", body_frame_style);
 
-        let body_label_style = Style {
-            name: "body.TLabel",
-            background: config.theme.body.background,
-            foreground: config.theme.body.foreground,
-            font_size: config.theme.body.font.size,
-            font_family: config.theme.body.font.family,
-            font_weight: config.theme.body.font.weight,
+            let body_label_style = Style {
+                name: "body.TLabel",
+                background: theme_config.body.background,
+                foreground: theme_config.body.foreground,
+                font_size: theme_config.body.font.size,
+                font_family: theme_config.body.font.family,
+                font_weight: theme_config.body.font.weight,
+            };
+            body_label_style.update();
+            theme.insert("BLabel", body_label_style);
         };
-        body_label_style.update();
-        theme.insert("BLabel", body_label_style);
 
         Wish {
             window: wish,
@@ -78,6 +87,8 @@ impl Wish {
             border: 0.0,
             prediction_frame: None,
             theme,
+            suggestions,
+            keyboard: Enigo::new(),
         }
     }
 
@@ -91,11 +102,15 @@ impl Wish {
         self.window.deiconify();
 
         let header_frame = rstk::make_frame(&self.window);
-        header_frame.style(self.theme.get("HFrame").unwrap());
+        if let Some(v) = self.theme.get("HFrame") {
+            header_frame.style(v);
+        }
 
         let label = rstk::make_label(&header_frame);
         label.text("Type _exit_ to end the clafrica");
-        label.style(self.theme.get("HLabel").unwrap());
+        if let Some(v) = self.theme.get("HLabel") {
+            label.style(v);
+        }
         label.pack().side(PackSide::Left).layout();
 
         header_frame.pack().fill(PackFill::X).layout();
@@ -128,21 +143,41 @@ impl api::Frontend for Wish {
             label.text(&input);
         }
 
-        let predictions = ["Wish"];
-
         self.prediction_frame.as_ref().map(TkWidget::destroy);
 
         let prediction_frame = rstk::make_frame(&self.window);
-        predictions.iter().enumerate().for_each(|(i, e)| {
-            let frame = rstk::make_frame(&prediction_frame);
-            frame.style(self.theme.get("BFrame").unwrap());
-            frame.pack().fill(PackFill::X).layout();
 
-            let label = rstk::make_label(&frame);
-            label.text(&format!("{}. {e}", i + 1));
-            label.style(self.theme.get("BLabel").unwrap());
-            label.pack().side(PackSide::Left).layout();
-        });
+        if input.len() > 1 {
+            self.suggestions
+                .iter()
+                .filter(|(code, _text)| code.starts_with(input.as_str()))
+                .enumerate()
+                .for_each(|(i, (code, text))| {
+                    if code.len() == input.len() {
+                        (0..code.len()).for_each(|_| self.keyboard.key_click(Key::Backspace));
+                        self.keyboard.key_sequence(text);
+                        return;
+                    }
+
+                    let frame = rstk::make_frame(&prediction_frame);
+                    if let Some(v) = self.theme.get("BFrame") {
+                        frame.style(v);
+                    }
+                    frame.pack().fill(PackFill::X).layout();
+
+                    let label = rstk::make_label(&frame);
+                    label.text(&format!(
+                        "{}. {text} ~{}",
+                        i + 1,
+                        code.chars().skip(input.len()).collect::<String>()
+                    ));
+                    if let Some(v) = self.theme.get("BLabel") {
+                        label.style(v);
+                    }
+                    label.pack().side(PackSide::Left).layout();
+                });
+        }
+
         prediction_frame.pack().fill(PackFill::X).layout();
 
         self.prediction_frame = Some(prediction_frame);
