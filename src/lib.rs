@@ -18,6 +18,7 @@ pub struct Wish {
     window: rstk::TkTopLevel,
     theme: HashMap<&'static str, Style>,
     suggestions: HashMap<String, String>,
+    page_size: usize,
     keyboard: Enigo,
 }
 
@@ -30,6 +31,8 @@ impl Wish {
         };
 
         init_rstk_ext();
+
+        let page_size = config.core.as_ref().map(|e| e.page_size).unwrap_or(10);
 
         let suggestions = config.extract_suggestions();
 
@@ -88,6 +91,7 @@ impl Wish {
             prediction_frame: None,
             theme,
             suggestions,
+            page_size,
             keyboard: Enigo::new(),
         }
     }
@@ -151,6 +155,7 @@ impl api::Frontend for Wish {
             self.suggestions
                 .iter()
                 .filter(|(code, _text)| code.starts_with(input.as_str()))
+                .take(self.page_size)
                 .enumerate()
                 .for_each(|(i, (code, text))| {
                     if code.len() == input.len() {

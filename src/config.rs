@@ -6,7 +6,13 @@ use toml::{self};
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub theme: Option<Theme>,
+    pub core: Option<Core>,
     suggestions: HashMap<String, Data>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Core {
+    pub page_size: usize,
 }
 
 #[derive(Deserialize, Debug)]

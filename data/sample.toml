@@ -1,5 +1,6 @@
 [core]
 buffer_size = 20
+page_size = 10
 
 [theme]
 header.background = "#252320"
