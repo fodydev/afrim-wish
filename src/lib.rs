@@ -138,6 +138,7 @@ impl api::Frontend for Wish {
 
     fn update_text(&mut self, input: Vec<char>) {
         let input = input.into_iter().filter(|c| *c != '\0').collect::<String>();
+        let last_input = input.split_whitespace().last().unwrap_or("");
 
         if input == "_exit_" {
             rstk::end_wish();
@@ -151,14 +152,14 @@ impl api::Frontend for Wish {
 
         let prediction_frame = rstk::make_frame(&self.window);
 
-        if input.len() > 1 {
+        if last_input.len() > 1 {
             self.suggestions
                 .iter()
-                .filter(|(code, _text)| code.starts_with(input.as_str()))
+                .filter(|(code, _text)| code.starts_with(last_input))
                 .take(self.page_size)
                 .enumerate()
                 .for_each(|(i, (code, text))| {
-                    if code.len() == input.len() {
+                    if code.len() == last_input.len() {
                         (0..code.len()).for_each(|_| self.keyboard.key_click(Key::Backspace));
                         self.keyboard.key_sequence(text);
                         return;
@@ -174,7 +175,7 @@ impl api::Frontend for Wish {
                     label.text(&format!(
                         "{}. {text} ~{}",
                         i + 1,
-                        code.chars().skip(input.len()).collect::<String>()
+                        code.chars().skip(last_input.len()).collect::<String>()
                     ));
                     if let Some(v) = self.theme.get("BLabel") {
                         label.style(v);
