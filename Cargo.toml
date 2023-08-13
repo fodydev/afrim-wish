@@ -12,7 +12,7 @@ keywords = ["african", "ime", "typing"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clafrica = "0.3.0"
+clafrica = "0.3.1"
 enigo = "0.1.2"
 rstk = "0.1.0"
 serde = { version = "1.0.163", features = ["serde_derive"] }
