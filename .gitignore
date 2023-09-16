@@ -1,4 +1,7 @@
 /target
 /tmp
+*.swp
+*.swo
 *~
 *.swp
+*.swn

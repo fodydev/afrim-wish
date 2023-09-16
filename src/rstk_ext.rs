@@ -5,7 +5,7 @@ pub fn init_rstk_ext() {
     rstk::tell_wish("chan configure stdin -encoding utf-8");
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Style {
     pub name: &'static str,
     pub background: String,
@@ -44,6 +44,7 @@ pub trait TkTopLevelExt {
     fn border(&self, _value: bool) {}
     fn topmost(&self, _value: bool) {}
     fn position(&self, _x: u64, _y: u64) {}
+    fn clear(&self) {}
 }
 
 impl TkTopLevelExt for TkTopLevel {
@@ -57,5 +58,12 @@ impl TkTopLevelExt for TkTopLevel {
 
     fn position(&self, x: u64, y: u64) {
         rstk::tell_wish(&format!("wm geometry {} +{}+{}", &self.id, x, y));
+    }
+
+    fn clear(&self) {
+        rstk::tell_wish(&format!(
+            "foreach e [winfo children {}] {{ destroy $e }}",
+            &self.id
+        ));
     }
 }

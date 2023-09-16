@@ -7,9 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [0.3.0] - 2023-09-16
 
-- Implement suggestions [(#20)](https://github.com/pythonbrad/clafrica-wish/pull/20)
+### Changed
+- Migration to clafrica V0.4.0
 
 ## [0.2.1] - 2023-05-17
 

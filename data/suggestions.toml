@@ -1,8 +1,0 @@
-[info]
-name		=	"sample"
-description = 	"Example of suggestion"
-authors		=	["Foo <foo@example.com>"]
-website		=	"https://example.com"
-
-[suggestions]
-_hi = "Hello!"

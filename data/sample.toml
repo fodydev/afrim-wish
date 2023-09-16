@@ -1,6 +1,7 @@
 [core]
 buffer_size = 20
 page_size = 10
+auto_commit = false
 
 [theme]
 header.background = "#252320"
@@ -10,9 +11,3 @@ body.background = "#dedddd"
 body.foreground = "#252320"
 body.font = { family = "Charis-SIL", size = 10, weight = "bold" }
 
-[suggestions]
-_hello = "Hi!"
-sample = { path = "suggestions.toml" }
-
-[data]
-_exit_ = ""
