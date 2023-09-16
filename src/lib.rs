@@ -2,7 +2,6 @@ mod config;
 mod rstk_ext;
 
 use clafrica::api;
-use enigo::{Enigo, Key, KeyboardControllable};
 use rstk::*;
 use rstk_ext::*;
 use std::collections::HashMap;
@@ -13,13 +12,12 @@ pub mod prelude {
 
 pub struct Wish {
     border: f64,
-    label: Option<rstk::TkLabel>,
-    prediction_frame: Option<TkFrame>,
     window: rstk::TkTopLevel,
     theme: HashMap<&'static str, Style>,
-    suggestions: HashMap<String, String>,
+    predicates: Vec<(String, String, String)>,
     page_size: usize,
-    keyboard: Enigo,
+    current_predicate_id: usize,
+    input: String,
 }
 
 impl Wish {
@@ -32,20 +30,13 @@ impl Wish {
 
         init_rstk_ext();
 
-        let page_size = config.core.as_ref().map(|e| e.page_size).unwrap_or(10);
-
-        let suggestions = config.extract_suggestions();
-
         let mut theme = HashMap::new();
 
         if let Some(theme_config) = config.theme {
             let header_frame_style = Style {
                 name: "header.TFrame",
                 background: theme_config.header.background.to_owned(),
-                foreground: "".to_owned(),
-                font_size: 0,
-                font_family: "".to_owned(),
-                font_weight: "".to_owned(),
+                ..Default::default()
             };
             header_frame_style.update();
             theme.insert("HFrame", header_frame_style);
@@ -64,10 +55,7 @@ impl Wish {
             let body_frame_style = Style {
                 name: "body.TFrame",
                 background: theme_config.body.background.to_owned(),
-                foreground: "".to_owned(),
-                font_size: 0,
-                font_family: "".to_owned(),
-                font_weight: "".to_owned(),
+                ..Default::default()
             };
             body_frame_style.update();
             theme.insert("BFrame", body_frame_style);
@@ -86,13 +74,12 @@ impl Wish {
 
         Wish {
             window: wish,
-            label: None,
             border: 0.0,
-            prediction_frame: None,
             theme,
-            suggestions,
-            page_size,
-            keyboard: Enigo::new(),
+            predicates: Vec::new(),
+            page_size: 10,
+            current_predicate_id: 0,
+            input: "".to_owned(),
         }
     }
 
@@ -105,21 +92,9 @@ impl Wish {
         self.window.topmost(true);
         self.window.deiconify();
 
-        let header_frame = rstk::make_frame(&self.window);
-        if let Some(v) = self.theme.get("HFrame") {
-            header_frame.style(v);
-        }
-
-        let label = rstk::make_label(&header_frame);
+        let label = rstk::make_label(&self.window);
         label.text("Type _exit_ to end the clafrica");
-        if let Some(v) = self.theme.get("HLabel") {
-            label.style(v);
-        }
-        label.pack().side(PackSide::Left).layout();
-
-        header_frame.pack().fill(PackFill::X).layout();
-
-        self.label = Some(label);
+        label.pack().layout();
     }
 }
 
@@ -129,62 +104,98 @@ impl api::Frontend for Wish {
     }
 
     fn update_position(&mut self, position: (f64, f64)) {
-        {
-            let x = (position.0 + self.border) as u64;
-            let y = (position.1 + self.border) as u64;
-            self.window.position(x, y);
-        }
+        let x = (position.0 + self.border) as u64;
+        let y = (position.1 + self.border) as u64;
+        self.window.position(x, y);
     }
 
-    fn update_text(&mut self, input: Vec<char>) {
-        let input = input.into_iter().filter(|c| *c != '\0').collect::<String>();
+    fn set_input(&mut self, text: &str) {
+        self.input = text.to_owned();
+    }
 
-        if input == "_exit_" {
+    fn set_page_size(&mut self, size: usize) {
+        self.page_size = size;
+    }
+
+    fn add_predicate(&mut self, code: &str, remaining_code: &str, text: &str) {
+        self.predicates
+            .push((code.to_owned(), remaining_code.to_owned(), text.to_owned()));
+    }
+
+    fn clear_predicates(&mut self) {
+        self.predicates.clear();
+        self.current_predicate_id = 0;
+    }
+
+    fn previous_predicate(&mut self) {
+        if self.predicates.is_empty() {
+            return;
+        }
+
+        self.current_predicate_id =
+            (self.current_predicate_id + self.predicates.len() - 1) % self.predicates.len();
+        self.display();
+    }
+
+    fn next_predicate(&mut self) {
+        if self.predicates.is_empty() {
+            return;
+        }
+
+        self.current_predicate_id = (self.current_predicate_id + 1) % self.predicates.len();
+        self.display();
+    }
+
+    fn get_selected_predicate(&self) -> Option<&(String, String, String)> {
+        self.predicates.get(self.current_predicate_id)
+    }
+
+    fn display(&self) {
+        if self.input == "_exit_" {
             rstk::end_wish();
         }
 
-        if let Some(label) = self.label.as_ref() {
-            label.text(&input);
+        self.window.clear();
+        let header_frame = rstk::make_frame(&self.window);
+
+        if let Some(v) = self.theme.get("HFrame") {
+            header_frame.style(v);
         }
 
-        self.prediction_frame.as_ref().map(TkWidget::destroy);
+        let label = rstk::make_label(&header_frame);
+        label.text("Type _exit_ to end the clafrica");
+
+        if let Some(v) = self.theme.get("HLabel") {
+            label.style(v);
+        }
+        label.pack().side(PackSide::Left).layout();
+        header_frame.pack().fill(PackFill::X).layout();
+        label.text(&self.input);
 
         let prediction_frame = rstk::make_frame(&self.window);
+        let page_size = std::cmp::min(self.page_size, self.predicates.len());
+        self.predicates
+            .iter()
+            .enumerate()
+            .chain(self.predicates.iter().enumerate())
+            .skip(self.current_predicate_id)
+            .take(page_size)
+            .for_each(|(i, (_code, remaining_code, text))| {
+                let frame = rstk::make_frame(&prediction_frame);
 
-        if input.len() > 1 {
-            self.suggestions
-                .iter()
-                .filter(|(code, _text)| code.starts_with(input.as_str()))
-                .take(self.page_size)
-                .enumerate()
-                .for_each(|(i, (code, text))| {
-                    if code.len() == input.len() {
-                        (0..code.len()).for_each(|_| self.keyboard.key_click(Key::Backspace));
-                        self.keyboard.key_sequence(text);
-                        return;
-                    }
+                if let Some(v) = self.theme.get("BFrame") {
+                    frame.style(v);
+                }
+                frame.pack().fill(PackFill::X).layout();
 
-                    let frame = rstk::make_frame(&prediction_frame);
-                    if let Some(v) = self.theme.get("BFrame") {
-                        frame.style(v);
-                    }
-                    frame.pack().fill(PackFill::X).layout();
-
-                    let label = rstk::make_label(&frame);
-                    label.text(&format!(
-                        "{}. {text} ~{}",
-                        i + 1,
-                        code.chars().skip(input.len()).collect::<String>()
-                    ));
-                    if let Some(v) = self.theme.get("BLabel") {
-                        label.style(v);
-                    }
-                    label.pack().side(PackSide::Left).layout();
-                });
-        }
+                let label = rstk::make_label(&frame);
+                label.text(&format!("{}. {text} ~{remaining_code}", i + 1,));
+                if let Some(v) = self.theme.get("BLabel") {
+                    label.style(v);
+                }
+                label.pack().side(PackSide::Left).layout();
+            });
 
         prediction_frame.pack().fill(PackFill::X).layout();
-
-        self.prediction_frame = Some(prediction_frame);
     }
 }
