@@ -1,4 +1,4 @@
-![Overview](demo.png)
+![Overview](demo.gif)
 
 Clafrica Wish
 ===
