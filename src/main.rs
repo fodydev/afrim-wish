@@ -1,7 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use clafrica::{prelude::Config as ClafricaConfig, run};
-use clafrica_wish::{prelude::Config as WishConfig, Wish};
+use afrim::{run, Config as ClafricaConfig};
+use afrim_wish::{Config as WishConfig, Wish};
 use std::{env, path::Path, process};
 
 fn main() {

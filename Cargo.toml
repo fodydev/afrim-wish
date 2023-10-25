@@ -1,18 +1,23 @@
 [package]
-name = "clafrica-wish"
+name = "afrim-wish"
 version = "0.3.0"
 edition = "2021"
-description = "Wish interface for the clafrica."
-repository = "https://github.com/pythonbrad/clafrica-wish"
+description = "Wish interface for the afrim."
+repository = "https://github.com/pythonbrad/afrim-wish"
 license = "MIT"
 readme = "README.md"
 authors = ["Brady Fomegne <fomegnemeudje@outlook.com>"]
 keywords = ["african", "ime", "typing"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+default = ["strsim", "rhai"]
+strsim = ["afrim/strsim"]
+inhibit = ["afrim/inhibit"]
+rhai = ["afrim/rhai"]
 
 [dependencies]
-clafrica = "0.4.0"
+afrim = { version = "0.5.0", default-features = false }
 rstk = "0.1.0"
 serde = { version = "1.0.163", features = ["serde_derive"] }
 toml = "0.7.3"

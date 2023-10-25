@@ -1,14 +1,12 @@
 mod config;
 mod rstk_ext;
 
-use clafrica::api;
+use afrim::frontend::Frontend;
 use rstk::*;
 use rstk_ext::*;
 use std::collections::HashMap;
 
-pub mod prelude {
-    pub use crate::config::Config;
-}
+pub use crate::config::Config;
 
 pub struct Wish {
     border: f64,
@@ -98,7 +96,7 @@ impl Wish {
     }
 }
 
-impl api::Frontend for Wish {
+impl Frontend for Wish {
     fn update_screen(&mut self, screen: (u64, u64)) {
         self.border = f64::sqrt((screen.0 * screen.0 + screen.1 * screen.1) as f64) / 100.0;
     }
