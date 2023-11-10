@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2023-11-10
+
 ### Changed
 
 - Update depencencies [(#31)](https://github.com/pythonbrad/clafrica-wish/pull/31)
