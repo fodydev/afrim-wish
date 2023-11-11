@@ -1,6 +1,6 @@
 [package]
 name = "afrim-wish"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2021"
 description = "Wish interface for the afrim."
 repository = "https://github.com/pythonbrad/afrim-wish"
