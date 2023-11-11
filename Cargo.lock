@@ -57,7 +57,7 @@ dependencies = [
 
 [[package]]
 name = "afrim-wish"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "afrim",
  "clap",
