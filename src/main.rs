@@ -2,20 +2,30 @@
 
 use afrim::{run, Config as ClafricaConfig};
 use afrim_wish::{Config as WishConfig, Wish};
-use std::{env, path::Path, process};
+use clap::Parser;
+use std::process;
+
+/// Afrim CLI.
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// Path to the configuration file.
+    config_file: std::path::PathBuf,
+
+    /// Only verify if the configuration file is valid.
+    #[arg(long, action)]
+    check: bool,
+}
 
 fn main() {
-    let filename = env::args().nth(1).unwrap_or_else(|| {
-        eprintln!("Configuration file required");
-        process::exit(1);
-    });
+    let args = Args::parse();
 
-    let clafrica_conf = ClafricaConfig::from_file(Path::new(&filename)).unwrap_or_else(|err| {
+    let clafrica_conf = ClafricaConfig::from_file(&args.config_file).unwrap_or_else(|err| {
         eprintln!("Problem parsing config file: {err}");
         process::exit(1);
     });
 
-    let wish_conf = WishConfig::from_file(Path::new(&filename)).unwrap_or_else(|err| {
+    let wish_conf = WishConfig::from_file(&args.config_file).unwrap_or_else(|err| {
         eprintln!("Problem parsing config file: {err}");
         process::exit(1);
     });

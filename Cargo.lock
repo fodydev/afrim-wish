@@ -4,9 +4,9 @@ version = 3
 
 [[package]]
 name = "afrim"
-version = "0.5.1"
+version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1435b8358111974ffa640bf6fb9868ad79d0492c1679357e68d0afa493cee2af"
+checksum = "f125fedbda3e1135208daba39349b4fa0c01f2a20eca16ea739498cc6e14c856"
 dependencies = [
  "afrim-config",
  "afrim-preprocessor",
@@ -25,7 +25,7 @@ dependencies = [
  "indexmap",
  "rhai",
  "serde",
- "toml 0.8.8",
+ "toml",
 ]
 
 [[package]]
@@ -46,9 +46,9 @@ dependencies = [
 
 [[package]]
 name = "afrim-translator"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "268898eb5e7ce66a6e1e0c440232ad264603ba4505ecc92bb09f878f60dea589"
+checksum = "13da25093a97c18a84988182fdf92a5a38d41d29b52368c17687587be2285b19"
 dependencies = [
  "indexmap",
  "rhai",
@@ -60,9 +60,10 @@ name = "afrim-wish"
 version = "0.3.1"
 dependencies = [
  "afrim",
+ "clap",
  "rstk",
  "serde",
- "toml 0.7.8",
+ "toml",
 ]
 
 [[package]]
@@ -162,9 +163,9 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "clap"
-version = "4.4.7"
+version = "4.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac495e00dcec98c83465d5ad66c5c4fabd652fd6686e7c6269b117e729a6f17b"
+checksum = "2275f18819641850fa26c89acc84d465c1bf91ce57bc2748b28c420473352f64"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -172,9 +173,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.4.7"
+version = "4.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c77ed9a32a62e6ca27175d00d29d05ca32e396ea1eb5fb01d8256b669cec7663"
+checksum = "07cdf1b148b25c1e1f7a42225e30a0d99a615cd4637eae7365548dd4529b95bc"
 dependencies = [
  "anstream",
  "anstyle",
@@ -649,18 +650,6 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "0.7.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd79e69d3b627db300ff956027cc6c3798cef26d22526befdfcd12feeb6d2257"
-dependencies = [
- "serde",
- "serde_spanned",
- "toml_datetime",
- "toml_edit 0.19.15",
-]
-
-[[package]]
-name = "toml"
 version = "0.8.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a1a195ec8c9da26928f773888e0742ca3ca1040c6cd859c919c9f59c1954ab35"
@@ -668,7 +657,7 @@ dependencies = [
  "serde",
  "serde_spanned",
  "toml_datetime",
- "toml_edit 0.21.0",
+ "toml_edit",
 ]
 
 [[package]]
@@ -678,19 +667,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3550f4e9685620ac18a50ed434eb3aec30db8ba93b0287467bca5826ea25baf1"
 dependencies = [
  "serde",
-]
-
-[[package]]
-name = "toml_edit"
-version = "0.19.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b5bb770da30e5cbfde35a2d7b9b8a2c4b8ef89548a7a6aeab5c9a576e3e7421"
-dependencies = [
- "indexmap",
- "serde",
- "serde_spanned",
- "toml_datetime",
- "winnow",
 ]
 
 [[package]]
