@@ -11,11 +11,13 @@ pub use crate::config::Config;
 pub struct Wish {
     border: f64,
     window: rstk::TkTopLevel,
-    theme: HashMap<&'static str, Style>,
+    themes: HashMap<&'static str, Style>,
     predicates: Vec<(String, String, String)>,
     page_size: usize,
     current_predicate_id: usize,
     input: String,
+    cursor_widget: rstk::TkLabel,
+    predicates_widget: rstk::TkLabel,
 }
 
 impl Wish {
@@ -28,52 +30,38 @@ impl Wish {
 
         init_rstk_ext();
 
-        let mut theme = HashMap::new();
+        let mut themes = HashMap::new();
 
         if let Some(theme_config) = config.theme {
-            let header_frame_style = Style {
-                name: "header.TFrame",
-                background: theme_config.header.background.to_owned(),
-                ..Default::default()
-            };
-            header_frame_style.update();
-            theme.insert("HFrame", header_frame_style);
-
-            let header_label_style = Style {
-                name: "header.TLabel",
+            let style = Style {
+                name: "header.predicates.TLabel",
                 background: theme_config.header.background,
                 foreground: theme_config.header.foreground,
                 font_size: theme_config.header.font.size,
                 font_family: theme_config.header.font.family,
                 font_weight: theme_config.header.font.weight,
             };
-            header_label_style.update();
-            theme.insert("HLabel", header_label_style);
+            style.update();
+            themes.insert("PHLabel", style);
 
-            let body_frame_style = Style {
-                name: "body.TFrame",
-                background: theme_config.body.background.to_owned(),
-                ..Default::default()
-            };
-            body_frame_style.update();
-            theme.insert("BFrame", body_frame_style);
-
-            let body_label_style = Style {
-                name: "body.TLabel",
+            let style = Style {
+                name: "body.predicates.TLabel",
                 background: theme_config.body.background,
                 foreground: theme_config.body.foreground,
                 font_size: theme_config.body.font.size,
-                font_family: theme_config.body.font.family,
+                font_family: theme_config.body.font.family.to_owned(),
                 font_weight: theme_config.body.font.weight,
             };
-            body_label_style.update();
-            theme.insert("BLabel", body_label_style);
+            style.update();
+            themes.insert("PBLabel", style);
         };
 
         Wish {
+            predicates_widget: rstk::make_label(&wish),
+            cursor_widget: rstk::make_label(&wish),
             window: wish,
             border: 0.0,
-            theme,
+            themes,
             predicates: Vec::new(),
             page_size: 10,
             current_predicate_id: 0,
@@ -90,9 +78,16 @@ impl Wish {
         self.window.topmost(true);
         self.window.deiconify();
 
-        let label = rstk::make_label(&self.window);
-        label.text("Type _exit_ to end the clafrica");
-        label.pack().layout();
+        // Cursor
+        self.cursor_widget = rstk::make_label(&self.window);
+        self.cursor_widget.text("Type _exit_ to end the clafrica");
+        self.cursor_widget.style(&self.themes["PHLabel"]);
+        self.cursor_widget.pack().fill(PackFill::X).layout();
+
+        // Predication
+        self.predicates_widget = rstk::make_label(&self.window);
+        self.predicates_widget.style(&self.themes["PBLabel"]);
+        self.predicates_widget.pack().fill(PackFill::X).layout();
     }
 }
 
@@ -153,47 +148,20 @@ impl Frontend for Wish {
             rstk::end_wish();
         }
 
-        self.window.clear();
-        let header_frame = rstk::make_frame(&self.window);
-
-        if let Some(v) = self.theme.get("HFrame") {
-            header_frame.style(v);
-        }
-
-        let label = rstk::make_label(&header_frame);
-        label.text("Type _exit_ to end the clafrica");
-
-        if let Some(v) = self.theme.get("HLabel") {
-            label.style(v);
-        }
-        label.pack().side(PackSide::Left).layout();
-        header_frame.pack().fill(PackFill::X).layout();
-        label.text(&self.input);
-
-        let prediction_frame = rstk::make_frame(&self.window);
         let page_size = std::cmp::min(self.page_size, self.predicates.len());
-        self.predicates
+        let texts: Vec<String> = self
+            .predicates
             .iter()
             .enumerate()
             .chain(self.predicates.iter().enumerate())
             .skip(self.current_predicate_id)
             .take(page_size)
-            .for_each(|(i, (_code, remaining_code, text))| {
-                let frame = rstk::make_frame(&prediction_frame);
+            .map(|(i, (_code, remaining_code, text))| {
+                format!("{}. {text} ~{remaining_code}", i + 1,)
+            })
+            .collect();
 
-                if let Some(v) = self.theme.get("BFrame") {
-                    frame.style(v);
-                }
-                frame.pack().fill(PackFill::X).layout();
-
-                let label = rstk::make_label(&frame);
-                label.text(&format!("{}. {text} ~{remaining_code}", i + 1,));
-                if let Some(v) = self.theme.get("BLabel") {
-                    label.style(v);
-                }
-                label.pack().side(PackSide::Left).layout();
-            });
-
-        prediction_frame.pack().fill(PackFill::X).layout();
+        self.cursor_widget.text(&self.input);
+        self.predicates_widget.text(&texts.join("\n"));
     }
 }
