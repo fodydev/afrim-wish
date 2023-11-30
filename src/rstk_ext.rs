@@ -17,7 +17,10 @@ pub struct Style {
 
 impl Style {
     pub fn update(&self) {
-        rstk::tell_wish(&format!("ttk::style layout {} {{}};", self.name));
+        rstk::tell_wish(&format!(
+            "ttk::style layout {} [ttk::style layout {}];",
+            self.name, self.name
+        ));
         rstk::tell_wish(&format!(
             "ttk::style config {} -background {{{}}} -foreground {{{}}} -font {{{} {} {}}};",
             self.name,
