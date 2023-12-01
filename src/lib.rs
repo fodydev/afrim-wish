@@ -8,8 +8,10 @@ use std::collections::HashMap;
 
 pub use crate::config::Config;
 
+#[derive(Clone)]
 pub struct Wish {
     border: f64,
+    predicates_window: rstk::TkTopLevel,
     window: rstk::TkTopLevel,
     themes: HashMap<&'static str, Style>,
     predicates: Vec<(String, String, String)>,
@@ -33,6 +35,7 @@ impl Wish {
         let mut themes = HashMap::new();
 
         if let Some(theme_config) = config.theme {
+            // Predicates
             let style = Style {
                 name: "header.predicates.TLabel",
                 background: theme_config.header.background,
@@ -54,11 +57,43 @@ impl Wish {
             };
             style.update();
             themes.insert("PBLabel", style);
+
+            // Toolkit
+            let style = Style {
+                name: "toolkit.TFrame",
+                background: "#1e1e1e".to_owned(),
+                ..Default::default()
+            };
+            style.update();
+            themes.insert("TFrame", style);
+
+            let style = Style {
+                name: "label.toolkit.TLabel",
+                background: "#1e1e1e".to_owned(),
+                foreground: "#ffffff".to_owned(),
+                font_size: 14,
+                font_family: theme_config.body.font.family.to_owned(),
+                ..Default::default()
+            };
+            style.update();
+            themes.insert("TLabel", style);
+
+            let style = Style {
+                name: "button.toolkit.TButton",
+                background: "#ffffff".to_owned(),
+                foreground: "#1e1e1e".to_owned(),
+                font_size: 14,
+                font_family: theme_config.body.font.family.to_owned(),
+                ..Default::default()
+            };
+            style.update();
+            themes.insert("TButton", style);
         };
 
         Wish {
             predicates_widget: rstk::make_label(&wish),
             cursor_widget: rstk::make_label(&wish),
+            predicates_window: rstk::make_toplevel(&wish),
             window: wish,
             border: 0.0,
             themes,
@@ -69,25 +104,119 @@ impl Wish {
         }
     }
 
-    pub fn build(&mut self) {
-        self.window.title("Clafrica Wish");
-        self.window.resizable(false, false);
-        self.window.background("#dedddd");
-        self.window.withdraw();
-        self.window.border(false);
-        self.window.topmost(true);
-        self.window.deiconify();
+    fn build_predicates_window(&mut self) {
+        self.predicates_window.resizable(false, false);
+        self.predicates_window.background("#dedddd");
+        self.predicates_window.withdraw();
+        self.predicates_window.border(false);
+        self.predicates_window.topmost(true);
+        self.predicates_window.deiconify();
 
         // Cursor
-        self.cursor_widget = rstk::make_label(&self.window);
+        self.cursor_widget = rstk::make_label(&self.predicates_window);
         self.cursor_widget.text("Type _exit_ to end the clafrica");
         self.cursor_widget.style(&self.themes["PHLabel"]);
         self.cursor_widget.pack().fill(PackFill::X).layout();
 
         // Predication
-        self.predicates_widget = rstk::make_label(&self.window);
+        self.predicates_widget = rstk::make_label(&self.predicates_window);
         self.predicates_widget.style(&self.themes["PBLabel"]);
         self.predicates_widget.pack().fill(PackFill::X).layout();
+    }
+
+    fn build_main_window(&self) {
+        self.window.title("Afrim Wish");
+        self.window.resizable(false, false);
+        self.window.background("#1e1e1e");
+        self.window.geometry(480, 240, -1, -1);
+        
+        // Header
+        let frame = rstk::make_frame(&self.window);
+        frame.style(&self.themes["TFrame"]);
+        // Header label
+        let label = rstk::make_label(&frame);
+        label.text("AFRIM Toolkit");
+        label.style(&self.themes["TLabel"]);
+        label.pack().side(PackSide::Left).layout();
+        // Header iconify button
+        let button = rstk::make_button(&frame);
+        button.text("x");
+        button.width(4);
+        button.command(|| rstk::end_wish());
+        button.pack().side(PackSide::Right).padx(5).layout();
+        // Header exit button
+        let button = rstk::make_button(&frame);
+        button.text("-");
+        {
+            let window = self.window.clone();
+            button.command(move || window.iconify());
+        }
+        button.width(4);
+        button.pack().side(PackSide::Right).padx(5).layout();
+        frame.pack().fill(PackFill::X).padx(30).pady(15).layout(); 
+
+        // Separator
+        rstk::make_frame(&self.window).pack().fill(PackFill::X).padx(30).layout();
+        let frame = rstk::make_frame(&self.window);
+        frame.style(&self.themes["TFrame"]);
+        frame.pack().fill(PackFill::X).pady(10).layout();
+
+        // Body
+        let frame = rstk::make_frame(&self.window);
+        frame.style(&self.themes["TFrame"]);
+
+        // IME field
+        let subframe = rstk::make_frame(&frame);
+        subframe.style(&self.themes["TFrame"]);
+        let label = rstk::make_label(&subframe);
+        label.text("IME:");
+        label.style(&self.themes["TLabel"]);
+        label.pack().side(PackSide::Left).layout();
+        subframe.pack().fill(PackFill::X).pady(10).layout();
+        let button = rstk::make_button(&subframe);
+        button.text("Amharic");
+        button.width(15);
+        button.style(&self.themes["TButton"]);
+        button.pack().side(PackSide::Right).layout();
+
+        // Auto Commit field
+        let subframe = rstk::make_frame(&frame);
+        subframe.style(&self.themes["TFrame"]);
+        let label = rstk::make_label(&subframe);
+        label.text("Auto Commit:");
+        label.style(&self.themes["TLabel"]);
+        label.pack().side(PackSide::Left).layout();
+        subframe.pack().fill(PackFill::X).pady(10).layout();
+        let button = rstk::make_button(&subframe);
+        button.text("True");
+        button.width(15);
+        button.style(&self.themes["TButton"]);
+        button.pack().side(PackSide::Right).layout();
+
+        // Buffer Size field
+        let subframe = rstk::make_frame(&frame);
+        subframe.style(&self.themes["TFrame"]);
+        let label = rstk::make_label(&subframe);
+        label.text("Buffer Size:");
+        label.style(&self.themes["TLabel"]);
+        label.pack().side(PackSide::Left).layout();
+        subframe.pack().fill(PackFill::X).pady(10).layout();
+        let button = rstk::make_button(&subframe);
+        button.text("64 bytes");
+        button.width(15);
+        button.style(&self.themes["TButton"]);
+        button.pack().side(PackSide::Right).layout();
+
+        frame.pack().fill(PackFill::X).padx(30).layout();
+    }
+
+    pub fn build(&mut self) {
+        self.build_predicates_window();
+        self.build_main_window();
+    }
+
+    pub fn listen(&self) {
+        rstk::mainloop();
     }
 }
 
@@ -99,7 +228,7 @@ impl Frontend for Wish {
     fn update_position(&mut self, position: (f64, f64)) {
         let x = (position.0 + self.border) as u64;
         let y = (position.1 + self.border) as u64;
-        self.window.position(x, y);
+        self.predicates_window.position(x, y);
     }
 
     fn set_input(&mut self, text: &str) {

@@ -5,7 +5,7 @@ pub fn init_rstk_ext() {
     rstk::tell_wish("chan configure stdin -encoding utf-8");
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Style {
     pub name: &'static str,
     pub background: String,

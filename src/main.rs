@@ -4,6 +4,7 @@ use afrim::{run, Config as ClafricaConfig};
 use afrim_wish::{Config as WishConfig, Wish};
 use clap::Parser;
 use std::process;
+use std::thread;
 
 /// Afrim CLI.
 #[derive(Parser)]
@@ -33,8 +34,17 @@ fn main() {
     let mut frontend = Wish::init(wish_conf);
     frontend.build();
 
-    if let Err(e) = run(clafrica_conf, frontend) {
-        eprintln!("Application error: {e}");
-        process::exit(1);
+    // We start the backend
+    {
+        let frontend = frontend.clone();
+        thread::spawn(move || {
+            if let Err(e) = run(clafrica_conf, frontend) {
+                eprintln!("Application error: {e}");
+                process::exit(1);
+            }
+        });
     }
+
+    // We start listening gui events
+    frontend.listen();
 }
