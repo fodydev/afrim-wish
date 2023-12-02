@@ -149,6 +149,18 @@ impl Wish {
         }
     }
 
+    pub fn raise_error(&self, message: &str, detail: &str) {
+        self.predicates_window.withdraw();
+        rstk::message_box()
+            .parent(&self.window)
+            .icon(IconImage::Error)
+            .title("Unexpected Error")
+            .message(message)
+            .detail(detail)
+            .show();
+        rstk::end_wish();
+    }
+
     fn build_predicates_window(&mut self) {
         self.predicates_window.resizable(false, false);
         self.predicates_window.background("#dedddd");
@@ -420,10 +432,6 @@ impl Frontend for Wish {
     }
 
     fn display(&self) {
-        if self.input == "_exit_" {
-            rstk::end_wish();
-        }
-
         let page_size = std::cmp::min(self.page_size, self.predicates.len());
         let texts: Vec<String> = self
             .predicates
