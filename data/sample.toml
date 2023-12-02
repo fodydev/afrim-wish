@@ -1,3 +1,8 @@
+[info]
+name = "Sample config"
+maintainors = ["test"]
+input_method = "test"
+
 [core]
 buffer_size = 20
 page_size = 10
