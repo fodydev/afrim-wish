@@ -2,25 +2,41 @@ use serde::Deserialize;
 use std::{error, fs, path::Path};
 use toml::{self};
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct Config {
     pub theme: Option<Theme>,
+    pub core: Core,
+    pub info: Info,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
+pub struct Core {
+    pub buffer_size: i8,
+    pub auto_commit: bool,
+}
+
+#[derive(Clone, Deserialize, Debug)]
+pub struct Info {
+    pub name: String,
+    pub maintainors: Vec<String>,
+    pub input_method: String,
+    pub homepage: Option<String>,
+}
+
+#[derive(Clone, Deserialize, Debug)]
 pub struct Theme {
     pub header: SectionTheme,
     pub body: SectionTheme,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct SectionTheme {
     pub background: String,
     pub foreground: String,
     pub font: ThemeFont,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct ThemeFont {
     pub family: String,
     pub size: u64,
@@ -47,6 +63,6 @@ mod tests {
         assert!(config.is_ok());
 
         let config = Config::from_file(Path::new("./data/blank_sample.toml"));
-        assert!(config.is_ok());
+        assert!(config.is_err());
     }
 }

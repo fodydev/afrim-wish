@@ -2,7 +2,7 @@
 name = "afrim-wish"
 version = "0.3.2"
 edition = "2021"
-description = "Wish interface for the afrim."
+description = "Afrim Wish is an GUI interface for the afrim ime."
 repository = "https://github.com/pythonbrad/afrim-wish"
 license = "MIT"
 readme = "README.md"

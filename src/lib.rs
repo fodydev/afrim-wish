@@ -8,8 +8,13 @@ use std::collections::HashMap;
 
 pub use crate::config::Config;
 
+// Ratio to easily adjust the dimension of the gui
+const GUI_RATIO: f64 = 0.8;
+
+#[derive(Clone)]
 pub struct Wish {
     border: f64,
+    predicates_window: rstk::TkTopLevel,
     window: rstk::TkTopLevel,
     themes: HashMap<&'static str, Style>,
     predicates: Vec<(String, String, String)>,
@@ -18,6 +23,7 @@ pub struct Wish {
     input: String,
     cursor_widget: rstk::TkLabel,
     predicates_widget: rstk::TkLabel,
+    config: config::Config,
 }
 
 impl Wish {
@@ -32,7 +38,8 @@ impl Wish {
 
         let mut themes = HashMap::new();
 
-        if let Some(theme_config) = config.theme {
+        if let Some(theme_config) = config.theme.clone() {
+            // Predicates
             let style = Style {
                 name: "header.predicates.TLabel",
                 background: theme_config.header.background,
@@ -50,15 +57,87 @@ impl Wish {
                 foreground: theme_config.body.foreground,
                 font_size: theme_config.body.font.size,
                 font_family: theme_config.body.font.family.to_owned(),
-                font_weight: theme_config.body.font.weight,
+                font_weight: theme_config.body.font.weight.to_owned(),
             };
             style.update();
             themes.insert("PBLabel", style);
+
+            // Toolkit
+            let style = Style {
+                name: "toolkit.TFrame",
+                background: "#1e1e1e".to_owned(),
+                ..Default::default()
+            };
+            style.update();
+            themes.insert("TFrame", style);
+
+            let style = Style {
+                name: "label.toolkit.TLabel",
+                background: "#1e1e1e".to_owned(),
+                foreground: "#ffffff".to_owned(),
+                font_size: (12.0 * GUI_RATIO) as u64,
+                font_family: theme_config.body.font.family.to_owned(),
+                ..Default::default()
+            };
+            style.update();
+            themes.insert("TLabel", style);
+
+            let style = Style {
+                name: "button.toolkit.TButton",
+                background: "#ffffff".to_owned(),
+                foreground: "#1e1e1e".to_owned(),
+                font_size: (12.0 * GUI_RATIO) as u64,
+                font_family: theme_config.body.font.family.to_owned(),
+                ..Default::default()
+            };
+            style.update();
+            themes.insert("TButton", style);
+
+            let style = Style {
+                name: "exit.toolkit.TButton",
+                background: "#e03131".to_owned(),
+                foreground: "#1e1e1e".to_owned(),
+                font_size: (12.0 * GUI_RATIO) as u64,
+                font_family: theme_config.body.font.family.to_owned(),
+                font_weight: "bold".to_owned(),
+            };
+            style.update();
+            themes.insert("TEButton", style);
+
+            let style = Style {
+                name: "iconify.toolkit.TButton",
+                background: "#1971c2".to_owned(),
+                foreground: "#1e1e1e".to_owned(),
+                font_size: (12.0 * GUI_RATIO) as u64,
+                font_family: theme_config.body.font.family.to_owned(),
+                font_weight: "bold".to_owned(),
+            };
+            style.update();
+            themes.insert("TIButton", style);
+
+            let style = Style {
+                name: "toolkit.TNotebook",
+                background: "#1e1e1e".to_owned(),
+                ..Default::default()
+            };
+            style.update();
+            themes.insert("TNotebook", style);
+
+            Style {
+                name: "toolkit.TNotebook.Tab",
+                background: "#ffffff".to_owned(),
+                foreground: "#1e1e1e".to_owned(),
+                font_size: (12.0 * GUI_RATIO) as u64,
+                font_family: theme_config.body.font.family.to_owned(),
+                ..Default::default()
+            }
+            .update();
         };
 
         Wish {
             predicates_widget: rstk::make_label(&wish),
             cursor_widget: rstk::make_label(&wish),
+            predicates_window: rstk::make_toplevel(&wish),
             window: wish,
             border: 0.0,
             themes,
@@ -66,28 +145,237 @@ impl Wish {
             page_size: 10,
             current_predicate_id: 0,
             input: "".to_owned(),
+            config,
         }
     }
 
-    pub fn build(&mut self) {
-        self.window.title("Clafrica Wish");
-        self.window.resizable(false, false);
-        self.window.background("#dedddd");
-        self.window.withdraw();
-        self.window.border(false);
-        self.window.topmost(true);
-        self.window.deiconify();
+    pub fn raise_error(&self, message: &str, detail: &str) {
+        self.predicates_window.withdraw();
+        rstk::message_box()
+            .parent(&self.window)
+            .icon(IconImage::Error)
+            .title("Unexpected Error")
+            .message(message)
+            .detail(detail)
+            .show();
+        rstk::end_wish();
+    }
+
+    fn build_predicates_window(&mut self) {
+        self.predicates_window.resizable(false, false);
+        self.predicates_window.background("#dedddd");
+        self.predicates_window.withdraw();
+        self.predicates_window.border(false);
+        self.predicates_window.topmost(true);
+        self.predicates_window.deiconify();
 
         // Cursor
-        self.cursor_widget = rstk::make_label(&self.window);
+        self.cursor_widget = rstk::make_label(&self.predicates_window);
         self.cursor_widget.text("Type _exit_ to end the clafrica");
         self.cursor_widget.style(&self.themes["PHLabel"]);
         self.cursor_widget.pack().fill(PackFill::X).layout();
 
         // Predication
-        self.predicates_widget = rstk::make_label(&self.window);
+        self.predicates_widget = rstk::make_label(&self.predicates_window);
         self.predicates_widget.style(&self.themes["PBLabel"]);
         self.predicates_widget.pack().fill(PackFill::X).layout();
+    }
+
+    fn build_main_window(&self) {
+        self.window.title("Afrim Wish");
+        self.window.resizable(false, false);
+        self.window.background("#1e1e1e");
+        self.window.geometry(
+            (480.0 * GUI_RATIO) as u64,
+            (250.0 * GUI_RATIO) as u64,
+            -1,
+            -1,
+        );
+
+        // Header
+        let frame = rstk::make_frame(&self.window);
+        frame.style(&self.themes["TFrame"]);
+        // Header label
+        let label = rstk::make_label(&frame);
+        label.text("AFRIM Toolkit");
+        label.style(&self.themes["TLabel"]);
+        label.pack().side(PackSide::Left).layout();
+        // Header iconify button
+        let button = rstk::make_button(&frame);
+        button.text("x");
+        button.width((4.0 * GUI_RATIO) as i64);
+        button.style(&self.themes["TEButton"]);
+        button.command(rstk::end_wish);
+        button
+            .pack()
+            .side(PackSide::Right)
+            .padx((5.0 * GUI_RATIO) as u64)
+            .layout();
+        // Header exit button
+        let button = rstk::make_button(&frame);
+        button.text("-");
+        {
+            let window = self.window.clone();
+            button.command(move || window.iconify());
+        }
+        button.width((4.0 * GUI_RATIO) as i64);
+        button.style(&self.themes["TIButton"]);
+        button
+            .pack()
+            .side(PackSide::Right)
+            .padx((5.0 * GUI_RATIO) as u64)
+            .layout();
+        // We build the header
+        frame
+            .pack()
+            .fill(PackFill::X)
+            .padx((20.0 * GUI_RATIO) as u64)
+            .pady((15.0 * GUI_RATIO) as u64)
+            .layout();
+
+        // Separator
+        rstk::make_frame(&self.window)
+            .pack()
+            .fill(PackFill::X)
+            .padx((30.0 * GUI_RATIO) as u64)
+            .layout();
+        let frame = rstk::make_frame(&self.window);
+        frame.style(&self.themes["TFrame"]);
+        frame
+            .pack()
+            .fill(PackFill::X)
+            .pady((10.0 * GUI_RATIO) as u64)
+            .layout();
+
+        // Body
+        let notebook = rstk::make_notebook(&self.window);
+        notebook.style(&self.themes["TNotebook"]);
+
+        // Page builder
+        macro_rules! make_page {
+            ( $tabname: expr, $($fieldname: expr => $fieldvalue: expr => $see_more: stmt)*) => {
+                let frame = rstk::make_frame(&self.window);
+                frame.style(&self.themes["TFrame"]);
+
+                $(
+                    let subframe = rstk::make_frame(&frame);
+                    subframe.style(&self.themes["TFrame"]);
+                    let label = rstk::make_label(&subframe);
+                    label.text($fieldname);
+                    label.style(&self.themes["TLabel"]);
+                    label.pack().side(PackSide::Left).layout();
+                    let button = rstk::make_button(&subframe);
+                    button.text($fieldvalue);
+                    button.width((25.0 * GUI_RATIO) as i64);
+                    button.style(&self.themes["TButton"]);
+                    let cmd = {$see_more};
+                    button.command(cmd);
+                    button.pack().side(PackSide::Right).layout();
+                    // We build the field
+                    subframe
+                        .pack()
+                        .fill(PackFill::X)
+                        .pady((2.0 * GUI_RATIO) as u64)
+                        .layout();
+                )*
+
+                notebook.add(&frame, $tabname)
+            };
+        }
+
+        // Details page
+        make_page!(
+            "Details",
+            "IME:" => &self.config.info.input_method => {
+                let window = self.window.clone();
+                let config_name = self.config.info.name.to_owned();
+                let config_maintainors = self.config.info.maintainors.join(", ");
+                let config_homepage = self.config.info.homepage.clone().unwrap_or_default();
+                move || {
+                    rstk::message_box()
+                        .parent(&window)
+                        .icon(IconImage::Information)
+                        .title("Configuration file")
+                        .message(&config_name)
+                        .detail(&format!(
+                            "{}\n\nby {}",
+                            &config_homepage,
+                            &config_maintainors,
+                        ))
+                        .show();
+                }
+            }
+            "Auto Commit:" => &self.config.core.auto_commit.to_string() => || ()
+            "Buffer Size:" => &self.config.core.buffer_size.to_string() => || ()
+        );
+
+        // Help page
+        make_page!(
+            "Help",
+            "Keyboard shortcuts:" => "open" => {
+                let window = self.window.clone();
+
+                move || {
+                    rstk::message_box()
+                        .parent(&window)
+                        .icon(IconImage::Information)
+                        .title("Keyboard shortcuts")
+                        .message("Keyboard shortcuts")
+                        .detail("\
+                            Command -> Shortcuts\n\n\
+                            Pause / Resume -> CtrlLeft + CtrlRight\n\n\
+                            Clear -> Escape / Space\n\n\
+                            Select Next Predicate -> Ctrl + ShiftLeft\n\n\
+                            Select Previous Predicate -> Ctrl + ShiftRight\n\n\
+                            Commit Selected Predicate -> Ctrl + Space\
+                        ")
+                        .show();
+                }
+            }
+            "About Afrim Wish:" => "open" => {
+                let window = self.window.clone();
+
+                move || {
+                    rstk::message_box()
+                        .parent(&window)
+                        .icon(IconImage::Information)
+                        .title("About")
+                        .message(env!("CARGO_PKG_NAME"))
+                        .detail(&format!(
+                            "\
+                            version: {}\n\n\
+                            by {}\n\n\
+                            {}\n\n\
+                            {}\n\n\
+                            This program comes with absolutely no warranty.\n\
+                            See the {} license for more details.\
+                            ",
+                            env!("CARGO_PKG_VERSION"),
+                            env!("CARGO_PKG_AUTHORS"),
+                            env!("CARGO_PKG_DESCRIPTION"),
+                            env!("CARGO_PKG_REPOSITORY"),
+                            env!("CARGO_PKG_LICENSE")
+                        ))
+                        .show();
+                }
+            }
+        );
+
+        // We build the notebook
+        notebook
+            .pack()
+            .fill(PackFill::X)
+            .padx((20.0 * GUI_RATIO) as u64)
+            .layout();
+    }
+
+    pub fn build(&mut self) {
+        self.build_predicates_window();
+        self.build_main_window();
+    }
+
+    pub fn listen(&self) {
+        rstk::mainloop();
     }
 }
 
@@ -99,7 +387,7 @@ impl Frontend for Wish {
     fn update_position(&mut self, position: (f64, f64)) {
         let x = (position.0 + self.border) as u64;
         let y = (position.1 + self.border) as u64;
-        self.window.position(x, y);
+        self.predicates_window.position(x, y);
     }
 
     fn set_input(&mut self, text: &str) {
@@ -144,10 +432,6 @@ impl Frontend for Wish {
     }
 
     fn display(&self) {
-        if self.input == "_exit_" {
-            rstk::end_wish();
-        }
-
         let page_size = std::cmp::min(self.page_size, self.predicates.len());
         let texts: Vec<String> = self
             .predicates
