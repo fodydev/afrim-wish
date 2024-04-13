@@ -17,8 +17,8 @@ inhibit = ["afrim/inhibit"]
 rhai = ["afrim/rhai"]
 
 [dependencies]
-afrim = { version = "0.5.2", default-features = false }
-clap = "4.4.8"
+afrim = { version = "0.5.4", default-features = false }
+clap = "4.5.4"
 rstk = "0.1.0"
-serde = { version = "1.0.192", features = ["serde_derive"] }
-toml = "0.8.8"
+serde = { version = "1.0.197", features = ["serde_derive"] }
+toml = "0.8.12"
