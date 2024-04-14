@@ -40,6 +40,11 @@ fn main() {
                     process::exit(1);
                 });
 
+            // End the program if check only.
+            if args.check {
+                frontend.destroy();
+            }
+
             if let Err(e) = run(clafrica_conf, frontend.clone()) {
                 frontend.raise_error("Application error", &e.to_string());
                 process::exit(1);
