@@ -377,6 +377,10 @@ impl Wish {
     pub fn listen(&self) {
         rstk::mainloop();
     }
+
+    pub fn destroy(&self) {
+        rstk::end_wish();
+    }
 }
 
 impl Frontend for Wish {
