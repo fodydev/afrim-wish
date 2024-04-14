@@ -5,12 +5,12 @@ version = 3
 [[package]]
 name = "afrim"
 version = "0.5.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "762803c8f2c8d81f7b3d0f044759cc1eecb7203a281b3ce63842f32aedbe5762"
+source = "git+https://github.com/pythonbrad/afrim?rev=7e5daba#7e5dabad938cbe1faf7df52eab14e07936d1dbfe"
 dependencies = [
  "afrim-config",
  "afrim-preprocessor",
  "afrim-translator",
+ "anyhow",
  "clap",
  "enigo",
  "rdev",
@@ -19,9 +19,9 @@ dependencies = [
 [[package]]
 name = "afrim-config"
 version = "0.4.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4741fd8cc18326330026e9ce6178ffbad28d2ec45d83e3fe005cd264c53d7ce3"
+source = "git+https://github.com/pythonbrad/afrim?rev=7e5daba#7e5dabad938cbe1faf7df52eab14e07936d1dbfe"
 dependencies = [
+ "anyhow",
  "indexmap",
  "rhai",
  "serde",
@@ -31,14 +31,12 @@ dependencies = [
 [[package]]
 name = "afrim-memory"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49955e0cc3d8675dfd776da00b1fe55e089b32409914374fe60abadced1edd00"
+source = "git+https://github.com/pythonbrad/afrim?rev=7e5daba#7e5dabad938cbe1faf7df52eab14e07936d1dbfe"
 
 [[package]]
 name = "afrim-preprocessor"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "409b1e28975b35a3366ca14604c4f2d811d43aad1aa2d5dfc2b67832303332fe"
+source = "git+https://github.com/pythonbrad/afrim?rev=7e5daba#7e5dabad938cbe1faf7df52eab14e07936d1dbfe"
 dependencies = [
  "afrim-memory",
  "keyboard-types",
@@ -47,8 +45,7 @@ dependencies = [
 [[package]]
 name = "afrim-translator"
 version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ad39b1deaa5ecb5b26e4c912fc0e7511d6179802b3ff45c05494be4eab7c315"
+source = "git+https://github.com/pythonbrad/afrim?rev=7e5daba#7e5dabad938cbe1faf7df52eab14e07936d1dbfe"
 dependencies = [
  "indexmap",
  "rhai",
@@ -127,6 +124,12 @@ dependencies = [
  "anstyle",
  "windows-sys",
 ]
+
+[[package]]
+name = "anyhow"
+version = "1.0.82"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f538837af36e6f6a9be0faa67f9a314f8119e4e4b5867c6ab40ed60360142519"
 
 [[package]]
 name = "autocfg"
