@@ -1,8 +1,12 @@
 use rstk::*;
 
 pub fn init_rstk_ext() {
-    // We create some useful tcl functions
-    rstk::tell_wish("chan configure stdin -encoding utf-8");
+    rstk::tell_wish(
+        r#"
+        chan configure stdin -encoding utf-8
+        wm protocol . WM_DELETE_WINDOW {destroy .};
+    "#,
+    );
 }
 
 #[derive(Clone, Debug, Default)]
