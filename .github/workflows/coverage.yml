@@ -1,0 +1,75 @@
+name: Coverage
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    env:
+      DISPLAY: ":99"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libxtst-dev libevdev-dev libxdo-dev
+          version: 1.0
+
+      - name: Setup headless environment
+        run: |
+          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+
+      - name: Dependencies
+        run: |
+          sudo apt-get install libxtst-dev libevdev-dev libxdo-dev --assume-yes
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          # To only cache runs from `main`
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - run: rustup component add llvm-tools-preview
+
+      - name: Install grcov
+        uses: actions-rs/install@v0.1
+        with:
+          crate: grcov
+          version: latest
+          use-tool-cache: true
+
+      - name: build
+        env:
+          RUSTFLAGS: -Cinstrument-coverage
+        run: cargo build --verbose
+
+      - name: test
+        env:
+          RUSTFLAGS: -Cinstrument-coverage
+          LLVM_PROFILE_FILE: name-%p-%m.profraw
+        run: cargo test --verbose
+
+      - name: Run grcov
+        run: |
+          mkdir coverage
+          grcov . \
+            --binary-path ./target/debug/ \
+            -s . \
+            -t lcov \
+            --branch \
+            --ignore-not-existing \
+            --ignore "/*" \
+            --excl-line "#\\[derive\\(" \
+            -o ./coverage/lcov.info
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
