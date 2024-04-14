@@ -66,6 +66,7 @@ jobs:
             --branch \
             --ignore-not-existing \
             --ignore "/*" \
+            --ignore "src/{main}.rs" \
             --excl-line "#\\[derive\\(" \
             -o ./coverage/lcov.info
 
