@@ -5,7 +5,7 @@ use toml::{self};
 #[derive(Clone, Deserialize, Debug)]
 pub struct Config {
     pub theme: Option<Theme>,
-    pub core: Core,
+    pub core: Option<Core>,
     pub info: Info,
 }
 
@@ -20,7 +20,7 @@ pub struct Info {
     pub name: String,
     pub maintainors: Vec<String>,
     pub input_method: String,
-    pub homepage: Option<String>,
+    pub homepage: String,
 }
 
 #[derive(Clone, Deserialize, Debug)]
@@ -43,6 +43,37 @@ pub struct ThemeFont {
     pub weight: String,
 }
 
+impl Default for &Core {
+    fn default() -> Self {
+        &Core {
+            buffer_size: 64,
+            auto_commit: false,
+        }
+    }
+}
+
+impl Default for Theme {
+    fn default() -> Self {
+        let font = ThemeFont {
+            family: "Charis-SIL".to_owned(),
+            size: 10,
+            weight: "bold".to_owned(),
+        };
+        let header = SectionTheme {
+            background: "#252320".to_owned(),
+            foreground: "#dedddd".to_owned(),
+            font: font.clone(),
+        };
+        let body = SectionTheme {
+            background: "#dedddd".to_owned(),
+            foreground: "#252320".to_owned(),
+            font,
+        };
+
+        Self { header, body }
+    }
+}
+
 impl Config {
     pub fn from_file(filepath: &Path) -> Result<Self, Box<dyn error::Error>> {
         let content = fs::read_to_string(filepath)?;
@@ -60,6 +91,9 @@ mod tests {
         use std::path::Path;
 
         let config = Config::from_file(Path::new("./data/sample.toml"));
+        assert!(config.is_ok());
+
+        let config = Config::from_file(Path::new("./data/full_sample.toml"));
         assert!(config.is_ok());
 
         let config = Config::from_file(Path::new("./data/blank_sample.toml"));
