@@ -6,6 +6,7 @@ Afrim Wish
   [![crates.io](https://img.shields.io/crates/v/afrim-wish.svg)](https://crates.io/crates/afrim-wish)
   [![LICENSE](https://img.shields.io/crates/l/afrim-wish.svg)](https://github.com/pythonbrad/afrim-wish/blob/main/LICENSE)
   ![Rust](https://github.com/pythonbrad/afrim-wish/workflows/Rust/badge.svg)
+  [![Coverage Status](https://coveralls.io/repos/github/pythonbrad/afrim-wish/badge.svg?branch=main)](https://coveralls.io/github/pythonbrad/afrim-wish?branch=main)
 
   Afrim Wish is a frontend alternative for [afrim](https://github.com/pythonbrad/afrim).
 
