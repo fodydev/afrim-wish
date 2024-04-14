@@ -38,101 +38,101 @@ impl Wish {
 
         let mut themes = HashMap::new();
 
-        if let Some(theme_config) = config.theme.clone() {
-            // Predicates
-            let style = Style {
-                name: "header.predicates.TLabel",
-                background: theme_config.header.background,
-                foreground: theme_config.header.foreground,
-                font_size: theme_config.header.font.size,
-                font_family: theme_config.header.font.family,
-                font_weight: theme_config.header.font.weight,
-            };
-            style.update();
-            themes.insert("PHLabel", style);
-
-            let style = Style {
-                name: "body.predicates.TLabel",
-                background: theme_config.body.background,
-                foreground: theme_config.body.foreground,
-                font_size: theme_config.body.font.size,
-                font_family: theme_config.body.font.family.to_owned(),
-                font_weight: theme_config.body.font.weight.to_owned(),
-            };
-            style.update();
-            themes.insert("PBLabel", style);
-
-            // Toolkit
-            let style = Style {
-                name: "toolkit.TFrame",
-                background: "#1e1e1e".to_owned(),
-                ..Default::default()
-            };
-            style.update();
-            themes.insert("TFrame", style);
-
-            let style = Style {
-                name: "label.toolkit.TLabel",
-                background: "#1e1e1e".to_owned(),
-                foreground: "#ffffff".to_owned(),
-                font_size: (12.0 * GUI_RATIO) as u64,
-                font_family: theme_config.body.font.family.to_owned(),
-                ..Default::default()
-            };
-            style.update();
-            themes.insert("TLabel", style);
-
-            let style = Style {
-                name: "button.toolkit.TButton",
-                background: "#ffffff".to_owned(),
-                foreground: "#1e1e1e".to_owned(),
-                font_size: (12.0 * GUI_RATIO) as u64,
-                font_family: theme_config.body.font.family.to_owned(),
-                ..Default::default()
-            };
-            style.update();
-            themes.insert("TButton", style);
-
-            let style = Style {
-                name: "exit.toolkit.TButton",
-                background: "#e03131".to_owned(),
-                foreground: "#1e1e1e".to_owned(),
-                font_size: (12.0 * GUI_RATIO) as u64,
-                font_family: theme_config.body.font.family.to_owned(),
-                font_weight: "bold".to_owned(),
-            };
-            style.update();
-            themes.insert("TEButton", style);
-
-            let style = Style {
-                name: "iconify.toolkit.TButton",
-                background: "#1971c2".to_owned(),
-                foreground: "#1e1e1e".to_owned(),
-                font_size: (12.0 * GUI_RATIO) as u64,
-                font_family: theme_config.body.font.family.to_owned(),
-                font_weight: "bold".to_owned(),
-            };
-            style.update();
-            themes.insert("TIButton", style);
-
-            let style = Style {
-                name: "toolkit.TNotebook",
-                background: "#1e1e1e".to_owned(),
-                ..Default::default()
-            };
-            style.update();
-            themes.insert("TNotebook", style);
-
-            Style {
-                name: "toolkit.TNotebook.Tab",
-                background: "#ffffff".to_owned(),
-                foreground: "#1e1e1e".to_owned(),
-                font_size: (12.0 * GUI_RATIO) as u64,
-                font_family: theme_config.body.font.family.to_owned(),
-                ..Default::default()
-            }
-            .update();
+        let theme_config = config.theme.clone().unwrap_or_default();
+        // Predicates
+        let style = Style {
+            name: "header.predicates.TLabel",
+            background: theme_config.header.background,
+            foreground: theme_config.header.foreground,
+            font_size: theme_config.header.font.size,
+            font_family: theme_config.header.font.family,
+            font_weight: theme_config.header.font.weight,
         };
+        style.update();
+        themes.insert("PHLabel", style);
+
+        let style = Style {
+            name: "body.predicates.TLabel",
+            background: theme_config.body.background,
+            foreground: theme_config.body.foreground,
+            font_size: theme_config.body.font.size,
+            font_family: theme_config.body.font.family.to_owned(),
+            font_weight: theme_config.body.font.weight.to_owned(),
+        };
+        style.update();
+        themes.insert("PBLabel", style);
+
+        // Toolkit
+        let font_family = "Charis-SIL";
+        let style = Style {
+            name: "toolkit.TFrame",
+            background: "#1e1e1e".to_owned(),
+            ..Default::default()
+        };
+        style.update();
+        themes.insert("TFrame", style);
+
+        let style = Style {
+            name: "label.toolkit.TLabel",
+            background: "#1e1e1e".to_owned(),
+            foreground: "#ffffff".to_owned(),
+            font_size: (12.0 * GUI_RATIO) as u64,
+            font_family: font_family.to_string(),
+            ..Default::default()
+        };
+        style.update();
+        themes.insert("TLabel", style);
+
+        let style = Style {
+            name: "button.toolkit.TButton",
+            background: "#ffffff".to_owned(),
+            foreground: "#1e1e1e".to_owned(),
+            font_size: (12.0 * GUI_RATIO) as u64,
+            font_family: font_family.to_string(),
+            ..Default::default()
+        };
+        style.update();
+        themes.insert("TButton", style);
+
+        let style = Style {
+            name: "exit.toolkit.TButton",
+            background: "#e03131".to_owned(),
+            foreground: "#1e1e1e".to_owned(),
+            font_size: (12.0 * GUI_RATIO) as u64,
+            font_family: font_family.to_string(),
+            font_weight: "bold".to_owned(),
+        };
+        style.update();
+        themes.insert("TEButton", style);
+
+        let style = Style {
+            name: "iconify.toolkit.TButton",
+            background: "#1971c2".to_owned(),
+            foreground: "#1e1e1e".to_owned(),
+            font_size: (12.0 * GUI_RATIO) as u64,
+            font_family: font_family.to_string(),
+            font_weight: "bold".to_owned(),
+        };
+        style.update();
+        themes.insert("TIButton", style);
+
+        let style = Style {
+            name: "toolkit.TNotebook",
+            background: "#1e1e1e".to_owned(),
+            ..Default::default()
+        };
+        style.update();
+        themes.insert("TNotebook", style);
+
+        Style {
+            name: "toolkit.TNotebook.Tab",
+            background: "#ffffff".to_owned(),
+            foreground: "#1e1e1e".to_owned(),
+            font_size: (12.0 * GUI_RATIO) as u64,
+            font_family: font_family.to_string(),
+            ..Default::default()
+        }
+        .update();
 
         Wish {
             predicates_widget: rstk::make_label(&wish),
@@ -290,7 +290,7 @@ impl Wish {
                 let window = self.window.clone();
                 let config_name = self.config.info.name.to_owned();
                 let config_maintainors = self.config.info.maintainors.join(", ");
-                let config_homepage = self.config.info.homepage.clone().unwrap_or_default();
+                let config_homepage = self.config.info.homepage.clone();
                 move || {
                     rstk::message_box()
                         .parent(&window)
@@ -305,8 +305,8 @@ impl Wish {
                         .show();
                 }
             }
-            "Auto Commit:" => &self.config.core.auto_commit.to_string() => || ()
-            "Buffer Size:" => &self.config.core.buffer_size.to_string() => || ()
+            "Auto Commit:" => &self.config.core.as_ref().unwrap_or_default().auto_commit.to_string() => || ()
+            "Buffer Size:" => &self.config.core.as_ref().unwrap_or_default().buffer_size.to_string() => || ()
         );
 
         // Help page
