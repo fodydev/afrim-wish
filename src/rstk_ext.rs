@@ -34,7 +34,7 @@ impl Style {
 }
 
 pub trait TkWidgetExt {
-    fn style(&self, _style: &Style) {}
+    fn style(&self, _style: &Style);
 }
 
 impl<T: TkWidget> TkWidgetExt for T {
@@ -48,9 +48,9 @@ impl<T: TkWidget> TkWidgetExt for T {
 }
 
 pub trait TkTopLevelExt {
-    fn border(&self, _value: bool) {}
-    fn topmost(&self, _value: bool) {}
-    fn position(&self, _x: u64, _y: u64) {}
+    fn border(&self, _value: bool);
+    fn topmost(&self, _value: bool);
+    fn position(&self, _x: u64, _y: u64);
 }
 
 impl TkTopLevelExt for TkTopLevel {
