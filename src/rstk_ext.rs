@@ -18,7 +18,7 @@ pub struct Style {
 impl Style {
     pub fn update(&self) {
         rstk::tell_wish(&format!(
-            "ttk::style layout {} [ttk::style layout {}];",
+            "ttk::style layout {{{}}} [ttk::style layout {{{}}}];",
             self.name, self.name
         ));
         rstk::tell_wish(&format!(
@@ -39,7 +39,11 @@ pub trait TkWidgetExt {
 
 impl<T: TkWidget> TkWidgetExt for T {
     fn style(&self, style: &Style) {
-        rstk::tell_wish(&format!("{} configure -style {}", self.id(), style.name));
+        rstk::tell_wish(&format!(
+            "{} configure -style {{{}}}",
+            self.id(),
+            style.name
+        ));
     }
 }
 
