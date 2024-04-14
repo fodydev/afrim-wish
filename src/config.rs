@@ -52,6 +52,15 @@ impl Default for &Core {
     }
 }
 
+impl Default for Core {
+    fn default() -> Self {
+        Core {
+            buffer_size: 64,
+            auto_commit: false,
+        }
+    }
+}
+
 impl Default for Theme {
     fn default() -> Self {
         let font = ThemeFont {
@@ -92,6 +101,11 @@ mod tests {
 
         let config = Config::from_file(Path::new("./data/sample.toml"));
         assert!(config.is_ok());
+
+        // Load default core and theme.
+        let config = config.unwrap();
+        config.core.unwrap_or_default();
+        config.theme.unwrap_or_default();
 
         let config = Config::from_file(Path::new("./data/full_sample.toml"));
         assert!(config.is_ok());
