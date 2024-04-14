@@ -13,10 +13,15 @@ env:
 jobs:
   build:
     runs-on: ${{matrix.os}}
+    env:
+      DISPLAY: ':99'
     strategy:
       fail-fast: false
       matrix: 
         os: [macos-latest, ubuntu-latest, windows-latest]
+        include:
+        - os: ubuntu-latest
+          headless: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
     steps:
       - uses: actions/checkout@v3
@@ -29,6 +34,9 @@ jobs:
         with:
           packages: libxtst-dev libevdev-dev libxdo-dev
           version: 1.0
+
+      - name: Setup headless environment
+        run: ${{matrix.headless}}
 
       - name: Add components
         run: rustup component add clippy rustfmt

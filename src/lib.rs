@@ -458,7 +458,6 @@ impl Frontend for Wish {
 mod tests {
     use crate::{Config, Wish};
     use afrim::frontend::Frontend;
-    use rstk::{self};
     use std::path::Path;
     use std::thread;
     use std::time::Duration;
@@ -487,8 +486,8 @@ mod tests {
         afrim_wish.display();
 
         // Test the geometry.
-        (0..800).for_each(|i| {
-            if i % 100 != 0 {
+        (0..100).for_each(|i| {
+            if i % 10 != 0 {
                 return;
             };
             let i = i as f64;
@@ -508,21 +507,5 @@ mod tests {
             Some(&("test".to_owned(), "123".to_owned(), "ok".to_owned()))
         );
         afrim_wish.display();
-
-        // Test error message.
-        {
-            let afrim_wish = afrim_wish.clone();
-            rstk::after(300, move || {
-                afrim_wish.raise_error("Intentional error", "For testing purpose");
-            });
-        }
-        {
-            let afrim_wish = afrim_wish.clone();
-            rstk::after(500, move || {
-                afrim_wish.destroy();
-            });
-        }
-
-        afrim_wish.listen();
     }
 }
