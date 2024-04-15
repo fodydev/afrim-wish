@@ -453,3 +453,59 @@ impl Frontend for Wish {
         self.predicates_widget.text(&texts.join("\n"));
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{Config, Wish};
+    use afrim::frontend::Frontend;
+    use std::path::Path;
+    use std::thread;
+    use std::time::Duration;
+
+    #[test]
+    fn test_api() {
+        let config = Config::from_file(Path::new("data/full_sample.toml")).unwrap();
+        let mut afrim_wish = Wish::init(config);
+        afrim_wish.build();
+
+        // Test without data.
+        afrim_wish.clear_predicates();
+        afrim_wish.next_predicate();
+        afrim_wish.previous_predicate();
+        assert!(afrim_wish.get_selected_predicate().is_none());
+        afrim_wish.display();
+
+        // Test the adding of predicates.
+        afrim_wish.set_page_size(3);
+        afrim_wish.set_input("Test started!");
+        afrim_wish.add_predicate("test", "123", "ok");
+        afrim_wish.add_predicate("test1", "23", "ok");
+        afrim_wish.add_predicate("test12", "1", "ok");
+        afrim_wish.add_predicate("test123", "", "ok");
+        afrim_wish.add_predicate("test1234", "", "");
+        afrim_wish.display();
+
+        // Test the geometry.
+        (0..100).for_each(|i| {
+            if i % 10 != 0 {
+                return;
+            };
+            let i = i as f64;
+            afrim_wish.update_position((i, i));
+            thread::sleep(Duration::from_millis(100));
+        });
+
+        // Test the navigation.
+        afrim_wish.previous_predicate();
+        assert_eq!(
+            afrim_wish.get_selected_predicate(),
+            Some(&("test1234".to_owned(), "".to_owned(), "".to_owned()))
+        );
+        afrim_wish.next_predicate();
+        assert_eq!(
+            afrim_wish.get_selected_predicate(),
+            Some(&("test".to_owned(), "123".to_owned(), "ok".to_owned()))
+        );
+        afrim_wish.display();
+    }
+}

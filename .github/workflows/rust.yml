@@ -13,20 +13,30 @@ env:
 jobs:
   build:
     runs-on: ${{matrix.os}}
+    env:
+      DISPLAY: ':99'
     strategy:
       fail-fast: false
       matrix: 
         os: [macos-latest, ubuntu-latest, windows-latest]
+        include:
+        - os: ubuntu-latest
+          headless: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
     steps:
       - uses: actions/checkout@v3
       - uses: Swatinem/rust-cache@v2
-
+        with:
+          # To only cache runs from `master`
+          save-if: ${{ github.ref == 'refs/heads/main' }}
       - if: matrix.os == 'ubuntu-latest'
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: libxtst-dev libevdev-dev libxdo-dev
           version: 1.0
+
+      - name: Setup headless environment
+        run: ${{matrix.headless}}
 
       - name: Add components
         run: rustup component add clippy rustfmt
