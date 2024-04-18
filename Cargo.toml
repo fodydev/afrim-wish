@@ -19,6 +19,6 @@ rhai = ["afrim/rhai"]
 [dependencies]
 afrim = { version = "0.5.4", default-features = false, git = "https://github.com/pythonbrad/afrim", rev = "7e5daba" }
 clap = "4.5.4"
-rstk = "0.1.0"
+rstk = "0.3.0"
 serde = { version = "1.0.197", features = ["serde_derive"] }
 toml = "0.8.12"
