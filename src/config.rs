@@ -1,5 +1,6 @@
+use anyhow::{Context, Result};
 use serde::Deserialize;
-use std::{error, fs, path::Path};
+use std::{fs, path::Path};
 use toml::{self};
 
 #[derive(Clone, Deserialize, Debug, Default)]
@@ -95,9 +96,11 @@ impl Default for Info {
 }
 
 impl Config {
-    pub fn from_file(filepath: &Path) -> Result<Self, Box<dyn error::Error>> {
-        let content = fs::read_to_string(filepath)?;
-        let config: Self = toml::from_str(&content)?;
+    pub fn from_file(filepath: &Path) -> Result<Self> {
+        let content = fs::read_to_string(filepath)
+            .with_context(|| format!("Couldn't open file {filepath:?}"))?;
+        let config: Self = toml::from_str(&content)
+            .with_context(|| format!("Failed to parse configuration file {filepath:?}"))?;
 
         Ok(config)
     }

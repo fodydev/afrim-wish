@@ -1,29 +1,52 @@
 mod config;
 mod window;
 
-use afrim::frontend::Frontend;
+use afrim::frontend::{Command, Frontend};
+use anyhow::{anyhow, Result};
 use rstk::*;
+use std::sync::{
+    mpsc::{Receiver, Sender},
+    OnceLock,
+};
+use std::thread;
 use window::{rstk_ext::init_rstk_ext, toolkit::ToolKit, tooltip::ToolTip};
 
 pub use config::Config;
 
-#[derive(Clone)]
 pub struct Wish {
-    window: rstk::TkTopLevel,
+    window: &'static rstk::TkTopLevel,
     tooltip: ToolTip,
     toolkit: ToolKit,
+    tx: Option<Sender<Command>>,
+    rx: Option<Receiver<Command>>,
 }
 
 impl Wish {
-    pub fn init(config: config::Config) -> Self {
-        let wish = if cfg!(debug_assertions) {
-            rstk::trace_with("wish").unwrap()
-        } else {
-            rstk::start_wish().unwrap()
-        };
+    fn init() -> &'static rstk::TkTopLevel {
+        static WISH: OnceLock<rstk::TkTopLevel> = OnceLock::new();
+        WISH.get_or_init(|| {
+            let wish = if cfg!(debug_assertions) {
+                rstk::trace_with("wish").unwrap()
+            } else {
+                rstk::start_wish().unwrap()
+            };
 
-        init_rstk_ext();
+            // The default behavior is to close the window.
+            // But since this window, represent the window,
+            // we don't want an unexpected behavior.
+            // It's better for us to manage the close.
+            //
+            // Note that, this close is done via the title bar.
+            wish.on_close(Self::kill);
 
+            init_rstk_ext();
+
+            wish
+        })
+    }
+
+    pub fn from_config(config: config::Config) -> Self {
+        let wish = Self::init();
         let tooltip = ToolTip::new(config.theme.to_owned().unwrap_or_default());
         let toolkit = ToolKit::new(config.to_owned());
 
@@ -31,106 +54,164 @@ impl Wish {
             window: wish,
             tooltip,
             toolkit,
+            tx: None,
+            rx: None,
         }
     }
 
-    pub fn raise_error(&self, message: &str, detail: &str) {
+    pub fn raise_error<T: std::fmt::Debug>(message: &str, detail: T) {
         rstk::message_box()
-            .parent(&self.window)
+            .parent(Self::init())
             .icon(IconImage::Error)
             .title("Unexpected Error")
             .message(message)
-            .detail(detail)
+            .detail(&format!("{detail:?}"))
             .show();
-        rstk::end_wish();
+        Self::kill();
     }
 
-    pub fn build(&mut self) {
-        self.tooltip.build(rstk::make_toplevel(&self.window));
+    fn build(&mut self) {
+        self.tooltip.build(rstk::make_toplevel(self.window));
         self.toolkit.build(self.window.to_owned());
     }
 
-    pub fn listen(&self) {
-        rstk::mainloop();
-    }
-
-    pub fn destroy(&self) {
+    /// End the process (wish and rust).
+    ///
+    /// Note that a `process::exit` is called internally.
+    pub fn kill() {
         rstk::end_wish();
     }
 }
 
 impl Frontend for Wish {
-    fn update_screen(&mut self, screen: (u64, u64)) {
-        self.tooltip.update_screen(screen);
-    }
+    fn init(&mut self, tx: Sender<Command>, rx: Receiver<Command>) -> Result<()> {
+        self.tx = Some(tx);
+        self.rx = Some(rx);
+        self.build();
 
-    fn update_position(&mut self, position: (f64, f64)) {
-        self.tooltip.update_position(position);
+        Ok(())
     }
+    fn listen(&mut self) -> Result<()> {
+        if self.tx.as_ref().and(self.rx.as_ref()).is_none() {
+            return Err(anyhow!("you should config the channel first!"));
+        }
 
-    fn set_input(&mut self, text: &str) {
-        self.tooltip.set_input_text(text);
-    }
+        // We shouldn't forget to listen for GUI events.
+        thread::spawn(rstk::mainloop);
 
-    fn set_page_size(&mut self, size: usize) {
-        self.tooltip.set_page_size(size);
-    }
+        let tx = self.tx.as_ref().unwrap();
 
-    fn add_predicate(&mut self, code: &str, remaining_code: &str, text: &str) {
-        self.tooltip.add_predicate(code, remaining_code, text);
-    }
+        loop {
+            let command = self.rx.as_ref().unwrap().recv()?;
+            dbg!(&command);
+            match command {
+                Command::ScreenSize(screen) => self.tooltip.update_screen(screen),
+                Command::Position(position) => self.tooltip.update_position(position),
+                Command::InputText(input) => self.tooltip.set_input_text(input),
+                Command::PageSize(size) => self.tooltip.set_page_size(size),
+                // TODO: implement the pause/resume.
+                Command::State(_state) => {}
+                Command::Predicate(predicate) => self.tooltip.add_predicate(predicate),
+                Command::Update => self.tooltip.update(),
+                Command::Clear => self.tooltip.clear(),
+                Command::SelectPreviousPredicate => self.tooltip.select_previous_predicate(),
+                Command::SelectNextPredicate => self.tooltip.select_next_predicate(),
+                Command::SelectedPredicate => {
+                    if let Some(predicate) = self.tooltip.get_selected_predicate() {
+                        tx.send(Command::Predicate(predicate.to_owned()))?;
+                    } else {
+                        tx.send(Command::NoPredicate)?;
+                    }
+                }
+                // TODO: complete the implementation
+                // to send GUI commands such as pause/resume.
+                Command::NOP => tx.send(Command::NOP)?,
+                Command::End => {
+                    tx.send(Command::End)?;
+                    self.window.destroy();
 
-    fn clear_predicates(&mut self) {
-        self.tooltip.clear();
-    }
-
-    fn previous_predicate(&mut self) {
-        self.tooltip.select_previous_predicate();
-    }
-
-    fn next_predicate(&mut self) {
-        self.tooltip.select_next_predicate();
-    }
-
-    fn get_selected_predicate(&self) -> Option<&(String, String, String)> {
-        self.tooltip.get_selected_predicate()
-    }
-
-    fn display(&self) {
-        self.tooltip.update();
+                    return Ok(());
+                }
+                _ => (),
+            }
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
     use crate::{Config, Wish};
-    use afrim::frontend::Frontend;
+    use afrim::frontend::{Command, Frontend, Predicate};
     use std::path::Path;
+    use std::sync::mpsc;
     use std::thread;
     use std::time::Duration;
 
     #[test]
     fn test_api() {
         let config = Config::from_file(Path::new("data/full_sample.toml")).unwrap();
-        let mut afrim_wish = Wish::init(config);
-        afrim_wish.build();
+        let mut afrim_wish = Wish::from_config(config);
+        assert!(afrim_wish.listen().is_err());
+        let (tx1, rx1) = mpsc::channel();
+        let (tx2, rx2) = mpsc::channel();
+
+        thread::spawn(move || {
+            afrim_wish.init(tx2, rx1).unwrap();
+            afrim_wish.listen().unwrap();
+        });
+
+        tx1.send(Command::NOP).unwrap();
+        assert_eq!(rx2.recv().unwrap(), Command::NOP);
 
         // Test without data.
-        afrim_wish.clear_predicates();
-        afrim_wish.next_predicate();
-        afrim_wish.previous_predicate();
-        assert!(afrim_wish.get_selected_predicate().is_none());
-        afrim_wish.display();
+        tx1.send(Command::ScreenSize((480, 320))).unwrap();
+        tx1.send(Command::Clear).unwrap();
+        tx1.send(Command::SelectNextPredicate).unwrap();
+        tx1.send(Command::SelectPreviousPredicate).unwrap();
+        tx1.send(Command::SelectedPredicate).unwrap();
+        assert_eq!(rx2.recv().unwrap(), Command::NoPredicate);
+        tx1.send(Command::Update).unwrap();
 
         // Test the adding of predicates.
-        afrim_wish.set_page_size(3);
-        afrim_wish.set_input("Test started!");
-        afrim_wish.add_predicate("test", "123", "ok");
-        afrim_wish.add_predicate("test1", "23", "ok");
-        afrim_wish.add_predicate("test12", "1", "ok");
-        afrim_wish.add_predicate("test123", "", "ok");
-        afrim_wish.add_predicate("test1234", "", "");
-        afrim_wish.display();
+        tx1.send(Command::PageSize(3)).unwrap();
+        tx1.send(Command::InputText("Test started!".to_owned()))
+            .unwrap();
+        tx1.send(Command::Predicate(Predicate {
+            code: "test".to_owned(),
+            remaining_code: "123".to_owned(),
+            texts: vec!["ok".to_owned()],
+            can_commit: false,
+        }))
+        .unwrap();
+        tx1.send(Command::Predicate(Predicate {
+            code: "test1".to_owned(),
+            remaining_code: "23".to_owned(),
+            texts: vec!["ok".to_owned()],
+            can_commit: false,
+        }))
+        .unwrap();
+        tx1.send(Command::Predicate(Predicate {
+            code: "test12".to_owned(),
+            remaining_code: "3".to_owned(),
+            texts: vec!["ok".to_owned()],
+            can_commit: false,
+        }))
+        .unwrap();
+        tx1.send(Command::Predicate(Predicate {
+            code: "test123".to_owned(),
+            remaining_code: "".to_owned(),
+            texts: vec!["ok".to_owned()],
+            can_commit: false,
+        }))
+        .unwrap();
+        tx1.send(Command::Predicate(Predicate {
+            code: "test1234".to_owned(),
+            remaining_code: "".to_owned(),
+            texts: vec!["".to_owned()],
+            can_commit: false,
+        }))
+        .unwrap();
+        tx1.send(Command::Update).unwrap();
 
         // Test the geometry.
         (0..100).for_each(|i| {
@@ -138,22 +219,36 @@ mod tests {
                 return;
             };
             let i = i as f64;
-            afrim_wish.update_position((i, i));
+            tx1.send(Command::Position((i, i))).unwrap();
             thread::sleep(Duration::from_millis(100));
         });
 
         // Test the navigation.
-        afrim_wish.previous_predicate();
+        tx1.send(Command::SelectPreviousPredicate).unwrap();
+        tx1.send(Command::SelectedPredicate).unwrap();
         assert_eq!(
-            afrim_wish.get_selected_predicate(),
-            Some(&("test1234".to_owned(), "".to_owned(), "".to_owned()))
+            rx2.recv().unwrap(),
+            Command::Predicate(Predicate {
+                code: "test123".to_owned(),
+                remaining_code: "".to_owned(),
+                texts: vec!["ok".to_owned()],
+                can_commit: false,
+            })
         );
-        afrim_wish.next_predicate();
+        tx1.send(Command::SelectNextPredicate).unwrap();
+        tx1.send(Command::SelectedPredicate).unwrap();
         assert_eq!(
-            afrim_wish.get_selected_predicate(),
-            Some(&("test".to_owned(), "123".to_owned(), "ok".to_owned()))
+            rx2.recv().unwrap(),
+            Command::Predicate(Predicate {
+                code: "test".to_owned(),
+                remaining_code: "123".to_owned(),
+                texts: vec!["ok".to_owned()],
+                can_commit: false,
+            })
         );
-        afrim_wish.display();
-        afrim_wish.destroy();
+        tx1.send(Command::Update).unwrap();
+
+        tx1.send(Command::End).unwrap();
+        assert_eq!(rx2.recv().unwrap(), Command::End);
     }
 }
