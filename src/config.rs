@@ -2,11 +2,11 @@ use serde::Deserialize;
 use std::{error, fs, path::Path};
 use toml::{self};
 
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug, Default)]
 pub struct Config {
     pub theme: Option<Theme>,
     pub core: Option<Core>,
-    pub info: Info,
+    pub info: Option<Info>,
 }
 
 #[derive(Clone, Deserialize, Debug)]
@@ -83,6 +83,17 @@ impl Default for Theme {
     }
 }
 
+impl Default for Info {
+    fn default() -> Self {
+        Self {
+            name: "Unknown".to_owned(),
+            input_method: "Unknow".to_owned(),
+            homepage: "Unknow".to_owned(),
+            maintainors: vec!["Unknow".to_owned()],
+        }
+    }
+}
+
 impl Config {
     pub fn from_file(filepath: &Path) -> Result<Self, Box<dyn error::Error>> {
         let content = fs::read_to_string(filepath)?;
@@ -99,18 +110,19 @@ mod tests {
         use crate::config::Config;
         use std::path::Path;
 
-        let config = Config::from_file(Path::new("./data/sample.toml"));
+        let config = Config::from_file(Path::new("./data/blank_sample.toml"));
         assert!(config.is_ok());
 
         // Load default core and theme.
         let config = config.unwrap();
         config.core.unwrap_or_default();
         config.theme.unwrap_or_default();
+        config.info.unwrap_or_default();
 
         let config = Config::from_file(Path::new("./data/full_sample.toml"));
         assert!(config.is_ok());
 
-        let config = Config::from_file(Path::new("./data/blank_sample.toml"));
-        assert!(config.is_err());
+        let config = Config::from_file(Path::new("./data/sample.toml"));
+        assert!(config.is_ok());
     }
 }
