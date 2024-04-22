@@ -250,6 +250,10 @@ mod tests {
         );
         tx1.send(Command::Update).unwrap();
 
+        // Test the idle state.
+        tx1.send(Command::State(true)).unwrap();
+        tx1.send(Command::State(false)).unwrap();
+
         // We end the communication.
         tx1.send(Command::End).unwrap();
         assert_eq!(rx2.recv().unwrap(), Command::End);
