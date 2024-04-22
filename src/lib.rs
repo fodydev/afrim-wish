@@ -32,11 +32,11 @@ impl Wish {
             };
 
             // The default behavior is to close the window.
-            // But since this window, represent the window,
+            // But since this window, represent the main window,
             // we don't want an unexpected behavior.
             // It's better for us to manage the close.
             //
-            // Note that, this close is done via the title bar.
+            // Note that, this close button is on the title bar.
             wish.on_close(Self::kill);
 
             init_rstk_ext();
@@ -154,7 +154,7 @@ mod tests {
         let (tx1, rx1) = mpsc::channel();
         let (tx2, rx2) = mpsc::channel();
 
-        thread::spawn(move || {
+        let afrim_wish_thread = thread::spawn(move || {
             afrim_wish.init(tx2, rx1).unwrap();
             afrim_wish.listen().unwrap();
         });
@@ -247,7 +247,12 @@ mod tests {
         );
         tx1.send(Command::Update).unwrap();
 
+        // We end the communication.
         tx1.send(Command::End).unwrap();
         assert_eq!(rx2.recv().unwrap(), Command::End);
+        assert!(rx2.recv().is_err());
+
+        // We wait the afrim to end properly.
+        afrim_wish_thread.join().unwrap();
     }
 }
