@@ -108,8 +108,7 @@ impl Frontend for Wish {
                 Command::Position(position) => self.tooltip.update_position(position),
                 Command::InputText(input) => self.tooltip.set_input_text(input),
                 Command::PageSize(size) => self.tooltip.set_page_size(size),
-                // TODO: implement the pause/resume.
-                Command::State(_state) => {}
+                Command::State(state) => self.toolkit.set_idle_state(state),
                 Command::Predicate(predicate) => self.tooltip.add_predicate(predicate),
                 Command::Update => self.tooltip.update(),
                 Command::Clear => self.tooltip.clear(),
@@ -122,9 +121,13 @@ impl Frontend for Wish {
                         tx.send(Command::NoPredicate)?;
                     }
                 }
-                // TODO: complete the implementation
-                // to send GUI commands such as pause/resume.
-                Command::NOP => tx.send(Command::NOP)?,
+                Command::NOP => {
+                    if let Some(state) = self.toolkit.new_idle_state() {
+                        tx.send(Command::State(state))?;
+                    } else {
+                        tx.send(Command::NOP)?;
+                    }
+                }
                 Command::End => {
                     tx.send(Command::End)?;
                     self.window.destroy();

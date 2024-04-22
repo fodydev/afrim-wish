@@ -2,6 +2,7 @@ use super::config::Config;
 use super::rstk_ext::*;
 use rstk::*;
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 // Ratio to easily adjust the dimension of the gui
 const GUI_RATIO: f64 = 0.8;
@@ -10,6 +11,9 @@ const GUI_RATIO: f64 = 0.8;
 pub struct ToolKit {
     themes: HashMap<&'static str, Style>,
     window: Option<rstk::TkTopLevel>,
+    idle_state_widget: Option<rstk::TkButton>,
+    new_idle_state: Arc<Mutex<bool>>,
+    curr_idle_state: bool,
     config: Config,
 }
 
@@ -52,24 +56,24 @@ impl ToolKit {
         self.themes.insert("TButton", style);
 
         let style = Style {
-            name: "exit.toolkit.TButton",
+            name: "idle.toolkit.TButton",
             background: "#e03131".to_owned(),
             foreground: "#1e1e1e".to_owned(),
             font_size: (12.0 * GUI_RATIO) as u64,
             font_family: font_family.to_string(),
             font_weight: "bold".to_owned(),
         };
-        self.themes.insert("TEButton", style);
+        self.themes.insert("TIButton", style);
 
         let style = Style {
-            name: "iconify.toolkit.TButton",
+            name: "running.toolkit.TButton",
             background: "#1971c2".to_owned(),
             foreground: "#1e1e1e".to_owned(),
             font_size: (12.0 * GUI_RATIO) as u64,
             font_family: font_family.to_string(),
             font_weight: "bold".to_owned(),
         };
-        self.themes.insert("TIButton", style);
+        self.themes.insert("TRButton", style);
 
         let style = Style {
             name: "toolkit.TNotebook",
@@ -111,31 +115,23 @@ impl ToolKit {
         label.text("AFRIM Toolkit");
         label.style(&self.themes["TLabel"]);
         label.pack().side(PackSide::Left).layout();
-        // Header iconify button
+        // Header idle state button
         let button = rstk::make_button(&frame);
-        button.text("x");
-        button.width((4.0 * GUI_RATIO) as i64);
-        button.style(&self.themes["TEButton"]);
-        button.command(rstk::end_wish);
-        button
-            .pack()
-            .side(PackSide::Right)
-            .padx((5.0 * GUI_RATIO) as u64)
-            .layout();
-        // Header exit button
-        let button = rstk::make_button(&frame);
-        button.text("-");
+        button.text("State");
         {
-            let window = window.clone();
-            button.command(move || window.iconify());
+            let idle_state = Arc::clone(&self.new_idle_state);
+            button.command(move || {
+                let mut idle_state = idle_state.lock().unwrap();
+
+                *idle_state = !*idle_state;
+            });
         }
-        button.width((4.0 * GUI_RATIO) as i64);
-        button.style(&self.themes["TIButton"]);
         button
             .pack()
             .side(PackSide::Right)
             .padx((5.0 * GUI_RATIO) as u64)
             .layout();
+        self.idle_state_widget = Some(button);
         // We build the header
         frame
             .pack()
@@ -287,5 +283,33 @@ impl ToolKit {
         self.window = Some(window);
         self.build_theme();
         self.build_window();
+    }
+
+    pub fn new_idle_state(&mut self) -> Option<bool> {
+        let curr_idle_state = self.curr_idle_state;
+        let new_idle_state = *self.new_idle_state.lock().unwrap();
+        let toggle = curr_idle_state != new_idle_state;
+
+        if toggle {
+            self.curr_idle_state = !self.curr_idle_state;
+
+            return Some(self.curr_idle_state);
+        }
+
+        None
+    }
+
+    pub fn set_idle_state(&mut self, state: bool) {
+        self.curr_idle_state = state;
+        *self.new_idle_state.lock().unwrap() = state;
+        let idle_state_widget = self.idle_state_widget.as_ref().unwrap();
+
+        if state {
+            idle_state_widget.text("IDLE");
+            idle_state_widget.style(&self.themes["TIButton"]);
+        } else {
+            idle_state_widget.text("Running");
+            idle_state_widget.style(&self.themes["TRButton"]);
+        }
     }
 }
