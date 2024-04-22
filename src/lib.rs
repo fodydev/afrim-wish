@@ -103,7 +103,6 @@ impl Frontend for Wish {
 
         loop {
             let command = self.rx.as_ref().unwrap().recv()?;
-            dbg!(&command);
             match command {
                 Command::ScreenSize(screen) => self.tooltip.update_screen(screen),
                 Command::Position(position) => self.tooltip.update_position(position),
