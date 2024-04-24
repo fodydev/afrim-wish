@@ -291,7 +291,7 @@ impl ToolKit {
         let toggle = curr_idle_state != new_idle_state;
 
         if toggle {
-            self.curr_idle_state = !self.curr_idle_state;
+            self.curr_idle_state = new_idle_state;
 
             return Some(self.curr_idle_state);
         }
