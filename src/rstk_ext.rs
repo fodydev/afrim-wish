@@ -1,12 +1,7 @@
 use rstk::*;
 
 pub fn init_rstk_ext() {
-    rstk::tell_wish(
-        r#"
-        chan configure stdin -encoding utf-8
-        wm protocol . WM_DELETE_WINDOW {destroy .};
-    "#,
-    );
+    rstk::tell_wish("chan configure stdin -encoding utf-8");
 }
 
 #[derive(Clone, Debug, Default)]
