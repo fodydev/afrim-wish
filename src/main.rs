@@ -3,10 +3,8 @@
 use afrim::{run, Config as ClafricaConfig};
 use afrim_wish::{Config as WishConfig, Wish};
 use clap::Parser;
-use std::process;
-use std::thread;
 
-/// Afrim CLI.
+/// Afrim Wish CLI.
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Args {
@@ -21,37 +19,26 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    let wish_conf = WishConfig::from_file(&args.config_file).unwrap_or_else(|err| {
-        eprintln!("Problem parsing config file: {err}");
-        process::exit(1);
-    });
+    let wish_conf = WishConfig::from_file(&args.config_file)
+        .map_err(|err| {
+            Wish::raise_error("Problem parsing config file", &err);
+        })
+        .unwrap();
 
-    let mut frontend = Wish::init(wish_conf);
-    frontend.build();
+    let wish = Wish::from_config(wish_conf);
 
-    // We start the backend
-    {
-        let frontend = frontend.clone();
+    let clafrica_conf = ClafricaConfig::from_file(&args.config_file)
+        .map_err(|err| {
+            Wish::raise_error("Problem parsing config file", &err);
+        })
+        .unwrap();
 
-        thread::spawn(move || {
-            let clafrica_conf =
-                ClafricaConfig::from_file(&args.config_file).unwrap_or_else(|err| {
-                    frontend.raise_error("Problem parsing config file", &err.to_string());
-                    process::exit(1);
-                });
-
-            // End the program if check only.
-            if args.check {
-                frontend.destroy();
-            }
-
-            if let Err(e) = run(clafrica_conf, frontend.clone()) {
-                frontend.raise_error("Application error", &e.to_string());
-                process::exit(1);
-            }
-        });
+    // End the program if check only.
+    if args.check {
+        Wish::kill();
     }
 
-    // We start listening gui events
-    frontend.listen();
+    if let Err(err) = run(clafrica_conf, wish) {
+        Wish::raise_error("Application error", &err);
+    }
 }

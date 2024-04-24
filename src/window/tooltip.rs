@@ -1,5 +1,6 @@
 use super::config::Theme;
 use super::rstk_ext::*;
+use afrim::frontend::Predicate;
 use rstk::*;
 use std::collections::HashMap;
 
@@ -9,7 +10,7 @@ pub struct ToolTip {
     window: Option<rstk::TkTopLevel>,
     cursor_widget: Option<rstk::TkLabel>,
     predicates_widget: Option<rstk::TkLabel>,
-    predicates: Vec<(String, String, String)>,
+    predicates: Vec<Predicate>,
     current_predicate_id: usize,
     page_size: usize,
     input: String,
@@ -89,17 +90,25 @@ impl ToolTip {
         self.window.as_ref().unwrap().position(x, y);
     }
 
-    pub fn set_input_text(&mut self, text: &str) {
-        self.input = text.to_owned();
+    pub fn set_input_text(&mut self, text: String) {
+        self.input = text;
     }
 
     pub fn set_page_size(&mut self, size: usize) {
         self.page_size = size;
     }
 
-    pub fn add_predicate(&mut self, code: &str, remaining_code: &str, text: &str) {
-        self.predicates
-            .push((code.to_owned(), remaining_code.to_owned(), text.to_owned()));
+    pub fn add_predicate(&mut self, predicate: Predicate) {
+        predicate
+            .texts
+            .iter()
+            .filter(|text| !text.is_empty())
+            .for_each(|text| {
+                let mut predicate = predicate.clone();
+                predicate.texts = vec![text.to_owned()];
+
+                self.predicates.push(predicate);
+            });
     }
 
     pub fn clear(&mut self) {
@@ -127,7 +136,7 @@ impl ToolTip {
         self.update();
     }
 
-    pub fn get_selected_predicate(&self) -> Option<&(String, String, String)> {
+    pub fn get_selected_predicate(&self) -> Option<&Predicate> {
         self.predicates.get(self.current_predicate_id)
     }
 
@@ -140,8 +149,13 @@ impl ToolTip {
             .chain(self.predicates.iter().enumerate())
             .skip(self.current_predicate_id)
             .take(page_size)
-            .map(|(i, (_code, remaining_code, text))| {
-                format!("{}. {text} ~{remaining_code}", i + 1,)
+            .map(|(i, predicate)| {
+                format!(
+                    "{}. {} ~{}",
+                    i + 1,
+                    predicate.texts[0],
+                    predicate.remaining_code
+                )
             })
             .collect();
 
