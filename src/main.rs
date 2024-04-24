@@ -19,15 +19,19 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    let wish_conf = WishConfig::from_file(&args.config_file).map_err(|err| {
-        Wish::raise_error("Problem parsing config file", &err);
-    }).unwrap();
+    let wish_conf = WishConfig::from_file(&args.config_file)
+        .map_err(|err| {
+            Wish::raise_error("Problem parsing config file", &err);
+        })
+        .unwrap();
 
     let wish = Wish::from_config(wish_conf);
 
-    let clafrica_conf = ClafricaConfig::from_file(&args.config_file).map_err(|err| {
-        Wish::raise_error("Problem parsing config file", &err);
-    }).unwrap();
+    let clafrica_conf = ClafricaConfig::from_file(&args.config_file)
+        .map_err(|err| {
+            Wish::raise_error("Problem parsing config file", &err);
+        })
+        .unwrap();
 
     // End the program if check only.
     if args.check {
