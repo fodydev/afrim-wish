@@ -62,7 +62,7 @@ impl ToolTip {
 
         // Cursor
         let cursor_widget = rstk::make_label(window);
-        cursor_widget.text("Type _exit_ to end the clafrica");
+        cursor_widget.text("Afrim is ready for input!");
         cursor_widget.style(&self.themes["PHLabel"]);
         cursor_widget.pack().fill(PackFill::X).layout();
         self.cursor_widget = Some(cursor_widget);
