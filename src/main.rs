@@ -1,6 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use afrim::{run, Config as ClafricaConfig};
+use afrim::{run, Config as AfrimConfig};
 use afrim_wish::{Config as WishConfig, Wish};
 use clap::Parser;
 
@@ -27,7 +27,7 @@ fn main() {
 
     let wish = Wish::from_config(wish_conf);
 
-    let clafrica_conf = ClafricaConfig::from_file(&args.config_file)
+    let afrim_conf = AfrimConfig::from_file(&args.config_file)
         .map_err(|err| {
             Wish::raise_error("Problem parsing config file", &err);
         })
@@ -38,7 +38,7 @@ fn main() {
         Wish::kill();
     }
 
-    if let Err(err) = run(clafrica_conf, wish) {
+    if let Err(err) = run(afrim_conf, wish) {
         Wish::raise_error("Application error", &err);
     }
 }
