@@ -1,4 +1,4 @@
-![Overview](demo.gif)
+![Overview](https://github.com/pythonbrad/afrim-wish/assets/45305909/56ee045c-b917-4d3d-beb4-451467e11b3a)
 
 Afrim Wish
 ===
