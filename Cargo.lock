@@ -4,8 +4,8 @@ version = 3
 
 [[package]]
 name = "afrim"
-version = "0.5.4"
-source = "git+https://github.com/pythonbrad/afrim?rev=7e5daba#7e5dabad938cbe1faf7df52eab14e07936d1dbfe"
+version = "0.6.0"
+source = "git+https://github.com/pythonbrad/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
 dependencies = [
  "afrim-config",
  "afrim-preprocessor",
@@ -18,8 +18,8 @@ dependencies = [
 
 [[package]]
 name = "afrim-config"
-version = "0.4.4"
-source = "git+https://github.com/pythonbrad/afrim?rev=7e5daba#7e5dabad938cbe1faf7df52eab14e07936d1dbfe"
+version = "0.4.5"
+source = "git+https://github.com/pythonbrad/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
 dependencies = [
  "anyhow",
  "indexmap",
@@ -30,13 +30,13 @@ dependencies = [
 
 [[package]]
 name = "afrim-memory"
-version = "0.4.0"
-source = "git+https://github.com/pythonbrad/afrim?rev=7e5daba#7e5dabad938cbe1faf7df52eab14e07936d1dbfe"
+version = "0.4.2"
+source = "git+https://github.com/pythonbrad/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
 
 [[package]]
 name = "afrim-preprocessor"
-version = "0.6.0"
-source = "git+https://github.com/pythonbrad/afrim?rev=7e5daba#7e5dabad938cbe1faf7df52eab14e07936d1dbfe"
+version = "0.6.1"
+source = "git+https://github.com/pythonbrad/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
 dependencies = [
  "afrim-memory",
  "keyboard-types",
@@ -44,8 +44,8 @@ dependencies = [
 
 [[package]]
 name = "afrim-translator"
-version = "0.1.4"
-source = "git+https://github.com/pythonbrad/afrim?rev=7e5daba#7e5dabad938cbe1faf7df52eab14e07936d1dbfe"
+version = "0.2.1"
+source = "git+https://github.com/pythonbrad/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
 dependencies = [
  "indexmap",
  "rhai",
@@ -54,9 +54,10 @@ dependencies = [
 
 [[package]]
 name = "afrim-wish"
-version = "0.3.2"
+version = "0.4.0"
 dependencies = [
  "afrim",
+ "anyhow",
  "clap",
  "rstk",
  "serde",
@@ -500,9 +501,9 @@ checksum = "d231b230927b5e4ad203db57bbcbee2802f6bce620b1e4a9024a07d94e2907ec"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.79"
+version = "1.0.81"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e835ff2298f5721608eb1a980ecaee1aef2c132bf95ecc026a11b7bf3c01c02e"
+checksum = "3d1597b0c024618f09a9c3b8655b7e430397a36d23fdafec26d6965e9eec3eba"
 dependencies = [
  "unicode-ident",
 ]
@@ -562,27 +563,27 @@ dependencies = [
 
 [[package]]
 name = "rstk"
-version = "0.1.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f01d34f6758044cb899a4ecfd766df0fceb544ecff346d18f84523ee71e07442"
+checksum = "0add4be2e35c9cfa903a4683e2a00f69004f90a76597a260e3266f36dc2d2807"
 dependencies = [
  "once_cell",
 ]
 
 [[package]]
 name = "serde"
-version = "1.0.197"
+version = "1.0.199"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3fb1c873e1b9b056a4dc4c0c198b24c3ffa059243875552b2bd0933b1aee4ce2"
+checksum = "0c9f6e76df036c77cd94996771fb40db98187f096dd0b9af39c6c6e452ba966a"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.197"
+version = "1.0.199"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7eb0b34b42edc17f6b7cac84a52a1c5f0e1bb2227e997ca9011ea3dd34e8610b"
+checksum = "11bd257a6541e141e42ca6d24ae26f7714887b47e89aa739099104c7e4d3b7fc"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -629,9 +630,9 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 
 [[package]]
 name = "syn"
-version = "2.0.58"
+version = "2.0.60"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44cfb93f38070beee36b3fef7d4f5a16f27751d94b187b666a5cc5e9b0d30687"
+checksum = "909518bc7b1c9b779f1bbf07f2929d35af9f0f37e47c6e9ef7f9dddc1e1821f3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -677,9 +678,9 @@ dependencies = [
 
 [[package]]
 name = "toml_edit"
-version = "0.22.9"
+version = "0.22.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e40bb779c5187258fd7aad0eb68cb8706a0a81fa712fbea808ab43c4b8374c4"
+checksum = "d3328d4f68a705b2a4498da1d580585d39a6510f98318a2cec3018a7ec61ddef"
 dependencies = [
  "indexmap",
  "serde",
@@ -885,9 +886,9 @@ checksum = "bec47e5bfd1bff0eeaf6d8b485cc1074891a197ab4225d504cb7a1ab88b02bf0"
 
 [[package]]
 name = "winnow"
-version = "0.6.6"
+version = "0.6.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0c976aaaa0e1f90dbb21e9587cdaf1d9679a1cde8875c0d6bd83ab96a208352"
+checksum = "14b9415ee827af173ebb3f15f9083df5a122eb93572ec28741fb153356ea2578"
 dependencies = [
  "memchr",
 ]
