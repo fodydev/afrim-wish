@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Added a window that show information about the application [(#39)](https://github.com/pythonbrad/clafrica-wish/pull/39)
+- Added a cli check mode [(#55)](https://github.com/pythonbrad/clafrica-wish/pull/55)
+
 ### Changed
 
-- Update depencencies [(#44)](https://github.com/pythonbrad/clafrica-wish/pull/44)
+- Update depencencies [(#44)](https://github.com/pythonbrad/clafrica-wish/pull/44) & [(#73)](https://github.com/pythonbrad/clafrica-wish/pull/73)
 
 ## [0.3.2] - 2023-11-11
 
