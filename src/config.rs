@@ -19,9 +19,10 @@ pub struct Core {
 #[derive(Clone, Deserialize, Debug)]
 pub struct Info {
     pub name: String,
-    pub maintainors: Vec<String>,
-    pub input_method: String,
-    pub homepage: String,
+    pub description: String,
+    pub authors: Vec<String>,
+    pub website: String,
+    pub version: String,
 }
 
 #[derive(Clone, Deserialize, Debug)]
@@ -87,10 +88,11 @@ impl Default for Theme {
 impl Default for Info {
     fn default() -> Self {
         Self {
-            name: "Unknown".to_owned(),
-            input_method: "Unknow".to_owned(),
-            homepage: "Unknow".to_owned(),
-            maintainors: vec!["Unknow".to_owned()],
+            name: "Unknow".to_owned(),
+            description: "".to_owned(),
+            authors: vec!["Unknow".to_owned()],
+            website: "".to_owned(),
+            version: "Unknow".to_owned(),
         }
     }
 }

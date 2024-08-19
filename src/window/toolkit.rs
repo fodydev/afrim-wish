@@ -195,11 +195,13 @@ impl ToolKit {
         let core = self.config.core.to_owned().unwrap_or_default();
         make_page!(
             "Details",
-            "IME:" => &info.input_method => {
+            "IME:" => &info.name => {
                 let window = window.clone();
                 let config_name = info.name.to_owned();
-                let config_maintainors = info.maintainors.join(", ");
-                let config_homepage = info.homepage.clone();
+                let config_authors = info.authors.join(", ");
+                let config_description = info.description.clone();
+                let config_website = info.website.clone();
+                let config_version = info.version.clone();
 
                 move || {
                     rstk::message_box()
@@ -208,9 +210,11 @@ impl ToolKit {
                         .title("Configuration file")
                         .message(&config_name)
                         .detail(&format!(
-                            "{}\n\nby {}",
-                            &config_homepage,
-                            &config_maintainors,
+                            "{}\n{}\n{}\n{}",
+                            &config_version,
+                            &config_description,
+                            &config_website,
+                            &config_authors,
                         ))
                         .show();
                 }
