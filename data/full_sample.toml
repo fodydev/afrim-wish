@@ -1,8 +1,9 @@
 [info]
 name = "Sample config"
-maintainors = ["test"]
-input_method = "test"
-homepage = "example.com"
+authors = ["test"]
+description = "test"
+website = "example.com"
+version = "2024-08-19"
 
 [core]
 buffer_size = 20
