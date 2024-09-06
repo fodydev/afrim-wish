@@ -24,7 +24,7 @@ jobs:
           headless: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
         with:
           # To only cache runs from `master`
