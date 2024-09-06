@@ -7,7 +7,7 @@ repository = "https://github.com/fodydev/afrim-wish"
 license = "MIT"
 readme = "README.md"
 authors = ["Brady Fomegne <fomegnemeudje@outlook.com>"]
-keywords = ["african", "ime", "typing"]
+keywords = ["afrim", "ime", "typing"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [features]
