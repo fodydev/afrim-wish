@@ -29,9 +29,7 @@ jobs:
       - name: Dependencies
         run: |
           sudo apt-get install libxtst-dev libevdev-dev libxdo-dev --assume-yes
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+      
       - uses: Swatinem/rust-cache@v2
         with:
           # To only cache runs from `main`
@@ -39,11 +37,7 @@ jobs:
       - run: rustup component add llvm-tools-preview
 
       - name: Install grcov
-        uses: actions-rs/install@v0.1
-        with:
-          crate: grcov
-          version: latest
-          use-tool-cache: true
+        run: cargo install grcov
 
       - name: build
         env:
