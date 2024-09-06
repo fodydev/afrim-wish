@@ -2,8 +2,8 @@ mod config;
 mod window;
 
 use afrim::frontend::{Command, Frontend};
-use anyhow::{anyhow, Result};
 use afrish::*;
+use anyhow::{anyhow, Result};
 use std::sync::{
     mpsc::{Receiver, Sender},
     OnceLock,
