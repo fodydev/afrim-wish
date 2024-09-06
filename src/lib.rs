@@ -3,18 +3,18 @@ mod window;
 
 use afrim::frontend::{Command, Frontend};
 use anyhow::{anyhow, Result};
-use rstk::*;
+use afrish::*;
 use std::sync::{
     mpsc::{Receiver, Sender},
     OnceLock,
 };
 use std::thread;
-use window::{rstk_ext::init_rstk_ext, toolkit::ToolKit, tooltip::ToolTip};
+use window::{toolkit::ToolKit, tooltip::ToolTip};
 
 pub use config::Config;
 
 pub struct Wish {
-    window: &'static rstk::TkTopLevel,
+    window: &'static afrish::TkTopLevel,
     tooltip: ToolTip,
     toolkit: ToolKit,
     tx: Option<Sender<Command>>,
@@ -22,13 +22,13 @@ pub struct Wish {
 }
 
 impl Wish {
-    fn init() -> &'static rstk::TkTopLevel {
-        static WISH: OnceLock<rstk::TkTopLevel> = OnceLock::new();
+    fn init() -> &'static afrish::TkTopLevel {
+        static WISH: OnceLock<afrish::TkTopLevel> = OnceLock::new();
         WISH.get_or_init(|| {
             let wish = if cfg!(debug_assertions) {
-                rstk::trace_with("wish").unwrap()
+                afrish::trace_with("wish").unwrap()
             } else {
-                rstk::start_wish().unwrap()
+                afrish::start_wish().unwrap()
             };
 
             // The default behavior is to close the window.
@@ -38,8 +38,6 @@ impl Wish {
             //
             // Note that, this close button is on the title bar.
             wish.on_close(Self::kill);
-
-            init_rstk_ext();
 
             wish
         })
@@ -60,7 +58,7 @@ impl Wish {
     }
 
     pub fn raise_error<T: std::fmt::Debug>(message: &str, detail: T) {
-        rstk::message_box()
+        afrish::message_box()
             .parent(Self::init())
             .icon(IconImage::Error)
             .title("Unexpected Error")
@@ -71,7 +69,7 @@ impl Wish {
     }
 
     fn build(&mut self) {
-        self.tooltip.build(rstk::make_toplevel(self.window));
+        self.tooltip.build(afrish::make_toplevel(self.window));
         self.toolkit.build(self.window.to_owned());
     }
 
@@ -79,7 +77,7 @@ impl Wish {
     ///
     /// Note that a `process::exit` is called internally.
     pub fn kill() {
-        rstk::end_wish();
+        afrish::end_wish();
     }
 }
 
@@ -97,7 +95,7 @@ impl Frontend for Wish {
         }
 
         // We shouldn't forget to listen for GUI events.
-        thread::spawn(rstk::mainloop);
+        thread::spawn(afrish::mainloop);
 
         let tx = self.tx.as_ref().unwrap();
 
