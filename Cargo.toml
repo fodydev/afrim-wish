@@ -20,6 +20,6 @@ rhai = ["afrim/rhai"]
 afrim = { version = "0.6.0", default-features = false, git = "https://github.com/pythonbrad/afrim", rev = "5f40469" }
 anyhow = "1.0.82"
 clap = "4.5.4"
-rstk = "0.3.0"
+afrish = { version = "0.1.0", default-features = false, git = "https://github.com/fodydev/afrish", rev = "e8c4fa2" }
 serde = { version = "1.0.197", features = ["serde_derive"] }
 toml = "0.8.12"

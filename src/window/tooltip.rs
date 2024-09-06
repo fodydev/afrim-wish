@@ -1,15 +1,14 @@
 use super::config::Theme;
-use super::rstk_ext::*;
 use afrim::frontend::Predicate;
-use rstk::*;
+use afrish::*;
 use std::collections::HashMap;
 
 #[derive(Clone, Default)]
 pub struct ToolTip {
     themes: HashMap<&'static str, Style>,
-    window: Option<rstk::TkTopLevel>,
-    cursor_widget: Option<rstk::TkLabel>,
-    predicates_widget: Option<rstk::TkLabel>,
+    window: Option<afrish::TkTopLevel>,
+    cursor_widget: Option<afrish::TkLabel>,
+    predicates_widget: Option<afrish::TkLabel>,
     predicates: Vec<Predicate>,
     current_predicate_id: usize,
     page_size: usize,
@@ -61,20 +60,20 @@ impl ToolTip {
         window.deiconify();
 
         // Cursor
-        let cursor_widget = rstk::make_label(window);
+        let cursor_widget = afrish::make_label(window);
         cursor_widget.text("Afrim is ready for input!");
         cursor_widget.style(&self.themes["PHLabel"]);
         cursor_widget.pack().fill(PackFill::X).layout();
         self.cursor_widget = Some(cursor_widget);
 
         // Predication
-        let predicates_widget = rstk::make_label(window);
+        let predicates_widget = afrish::make_label(window);
         predicates_widget.style(&self.themes["PBLabel"]);
         predicates_widget.pack().fill(PackFill::X).layout();
         self.predicates_widget = Some(predicates_widget);
     }
 
-    pub fn build(&mut self, window: rstk::TkTopLevel) {
+    pub fn build(&mut self, window: afrish::TkTopLevel) {
         self.window = Some(window);
         self.build_theme();
         self.build_window();

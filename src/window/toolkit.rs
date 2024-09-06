@@ -1,6 +1,5 @@
 use super::config::Config;
-use super::rstk_ext::*;
-use rstk::*;
+use afrish::*;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
@@ -10,8 +9,8 @@ const GUI_RATIO: f64 = 0.8;
 #[derive(Clone, Default)]
 pub struct ToolKit {
     themes: HashMap<&'static str, Style>,
-    window: Option<rstk::TkTopLevel>,
-    idle_state_widget: Option<rstk::TkButton>,
+    window: Option<afrish::TkTopLevel>,
+    idle_state_widget: Option<afrish::TkButton>,
     new_idle_state: Arc<Mutex<bool>>,
     curr_idle_state: bool,
     config: Config,
@@ -108,15 +107,15 @@ impl ToolKit {
         );
 
         // Header
-        let frame = rstk::make_frame(window);
+        let frame = afrish::make_frame(window);
         frame.style(&self.themes["TFrame"]);
         // Header label
-        let label = rstk::make_label(&frame);
+        let label = afrish::make_label(&frame);
         label.text("AFRIM Toolkit");
         label.style(&self.themes["TLabel"]);
         label.pack().side(PackSide::Left).layout();
         // Header idle state button
-        let button = rstk::make_button(&frame);
+        let button = afrish::make_button(&frame);
         button.text("State");
         {
             let idle_state = Arc::clone(&self.new_idle_state);
@@ -141,12 +140,12 @@ impl ToolKit {
             .layout();
 
         // Separator
-        rstk::make_frame(window)
+        afrish::make_frame(window)
             .pack()
             .fill(PackFill::X)
             .padx((30.0 * GUI_RATIO) as u64)
             .layout();
-        let frame = rstk::make_frame(window);
+        let frame = afrish::make_frame(window);
         frame.style(&self.themes["TFrame"]);
         frame
             .pack()
@@ -155,23 +154,23 @@ impl ToolKit {
             .layout();
 
         // Body
-        let notebook = rstk::make_notebook(window);
+        let notebook = afrish::make_notebook(window);
         notebook.style(&self.themes["TNotebook"]);
 
         // Page builder
         macro_rules! make_page {
             ( $tabname: expr, $($fieldname: expr => $fieldvalue: expr => $see_more: stmt)*) => {
-                let frame = rstk::make_frame(window);
+                let frame = afrish::make_frame(window);
                 frame.style(&self.themes["TFrame"]);
 
                 $(
-                    let subframe = rstk::make_frame(&frame);
+                    let subframe = afrish::make_frame(&frame);
                     subframe.style(&self.themes["TFrame"]);
-                    let label = rstk::make_label(&subframe);
+                    let label = afrish::make_label(&subframe);
                     label.text($fieldname);
                     label.style(&self.themes["TLabel"]);
                     label.pack().side(PackSide::Left).layout();
-                    let button = rstk::make_button(&subframe);
+                    let button = afrish::make_button(&subframe);
                     button.text($fieldvalue);
                     button.width((25.0 * GUI_RATIO) as i64);
                     button.style(&self.themes["TButton"]);
@@ -204,7 +203,7 @@ impl ToolKit {
                 let config_version = info.version.clone();
 
                 move || {
-                    rstk::message_box()
+                    afrish::message_box()
                         .parent(&window)
                         .icon(IconImage::Information)
                         .title("Configuration file")
@@ -230,7 +229,7 @@ impl ToolKit {
                 let window = window.clone();
 
                 move || {
-                    rstk::message_box()
+                    afrish::message_box()
                         .parent(&window)
                         .icon(IconImage::Information)
                         .title("Keyboard shortcuts")
@@ -250,7 +249,7 @@ impl ToolKit {
                 let window = window.clone();
 
                 move || {
-                    rstk::message_box()
+                    afrish::message_box()
                         .parent(&window)
                         .icon(IconImage::Information)
                         .title("About")
@@ -283,7 +282,7 @@ impl ToolKit {
             .layout();
     }
 
-    pub fn build(&mut self, window: rstk::TkTopLevel) {
+    pub fn build(&mut self, window: afrish::TkTopLevel) {
         self.window = Some(window);
         self.build_theme();
         self.build_window();
