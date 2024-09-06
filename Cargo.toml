@@ -3,7 +3,7 @@ name = "afrim-wish"
 version = "0.4.0"
 edition = "2021"
 description = "Afrim Wish is an GUI interface for the afrim ime."
-repository = "https://github.com/pythonbrad/afrim-wish"
+repository = "https://github.com/fodydev/afrim-wish"
 license = "MIT"
 readme = "README.md"
 authors = ["Brady Fomegne <fomegnemeudje@outlook.com>"]
@@ -17,7 +17,7 @@ inhibit = ["afrim/inhibit"]
 rhai = ["afrim/rhai"]
 
 [dependencies]
-afrim = { version = "0.6.0", default-features = false, git = "https://github.com/pythonbrad/afrim", rev = "5f40469" }
+afrim = { version = "0.6.0", default-features = false, git = "https://github.com/fodydev/afrim", rev = "5f40469" }
 anyhow = "1.0.82"
 clap = "4.5.4"
 afrish = { version = "0.1.0", default-features = false, git = "https://github.com/fodydev/afrish", rev = "e8c4fa2" }
