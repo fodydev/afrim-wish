@@ -5,7 +5,7 @@ version = 3
 [[package]]
 name = "afrim"
 version = "0.6.0"
-source = "git+https://github.com/pythonbrad/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
+source = "git+https://github.com/fodydev/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
 dependencies = [
  "afrim-config",
  "afrim-preprocessor",
@@ -19,7 +19,7 @@ dependencies = [
 [[package]]
 name = "afrim-config"
 version = "0.4.5"
-source = "git+https://github.com/pythonbrad/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
+source = "git+https://github.com/fodydev/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
 dependencies = [
  "anyhow",
  "indexmap",
@@ -31,12 +31,12 @@ dependencies = [
 [[package]]
 name = "afrim-memory"
 version = "0.4.2"
-source = "git+https://github.com/pythonbrad/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
+source = "git+https://github.com/fodydev/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
 
 [[package]]
 name = "afrim-preprocessor"
 version = "0.6.1"
-source = "git+https://github.com/pythonbrad/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
+source = "git+https://github.com/fodydev/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
 dependencies = [
  "afrim-memory",
  "keyboard-types",
@@ -45,7 +45,7 @@ dependencies = [
 [[package]]
 name = "afrim-translator"
 version = "0.2.1"
-source = "git+https://github.com/pythonbrad/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
+source = "git+https://github.com/fodydev/afrim?rev=5f40469#5f40469dd3970c68ede03f7d0041fc4644f2e59a"
 dependencies = [
  "indexmap",
  "rhai",
