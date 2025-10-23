@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update depencencies [(#34)](https://github.com/fodydev/afrim-wish/pull/34)
+- Updated depencencies [(#88)](https://github.com/fodydev/afrim-wish/pull/88)
+- Updated the config template to match the new format [(#79)](https://github.com/fodydev/afrim-wish/pull/79)
 
 ## [0.4.0] - 2024-04-28
 
