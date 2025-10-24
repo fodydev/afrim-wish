@@ -17,9 +17,9 @@ inhibit = ["afrim/inhibit"]
 rhai = ["afrim/rhai"]
 
 [dependencies]
-afrim = { version = "0.6.2", default-features = false, git = "https://github.com/fodydev/afrim", rev = "16ade83" }
+afrim = "0.6.2"
 anyhow = "1.0.100"
 clap = "4.5.50"
-afrish = { version = "0.1.0", path = "../afrish" }
+afrish = { version = "0.1.1", path = "../afrish" }
 serde = { version = "1.0.228", features = ["serde_derive"] }
 toml = "0.9.8"
