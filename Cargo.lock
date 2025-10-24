@@ -5,7 +5,8 @@ version = 4
 [[package]]
 name = "afrim"
 version = "0.6.2"
-source = "git+https://github.com/fodydev/afrim?rev=16ade83#16ade83277f01f3096b3d8e561294681998e3183"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "12c91fee1536c7e542b7a8f6a1357d93daee47ece0a44d358ef171151aaa00e2"
 dependencies = [
  "afrim-config",
  "afrim-preprocessor",
@@ -19,7 +20,8 @@ dependencies = [
 [[package]]
 name = "afrim-config"
 version = "0.4.7"
-source = "git+https://github.com/fodydev/afrim?rev=16ade83#16ade83277f01f3096b3d8e561294681998e3183"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b4c230ab6ce67d93afebbeb11a66277069c9543f957583a655dc463c2aed82e"
 dependencies = [
  "anyhow",
  "indexmap",
@@ -31,12 +33,14 @@ dependencies = [
 [[package]]
 name = "afrim-memory"
 version = "0.4.2"
-source = "git+https://github.com/fodydev/afrim?rev=16ade83#16ade83277f01f3096b3d8e561294681998e3183"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "44431d38c46ecff3cfcaf9087c9d0e0bb7113f3d3a6a1020fa2c886f430551e0"
 
 [[package]]
 name = "afrim-preprocessor"
 version = "0.6.3"
-source = "git+https://github.com/fodydev/afrim?rev=16ade83#16ade83277f01f3096b3d8e561294681998e3183"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d9519d055a8bfec6c9304c6dc118859573232b9f467cf6be46ac6abe76f2bc2e"
 dependencies = [
  "afrim-memory",
  "keyboard-types",
@@ -45,7 +49,8 @@ dependencies = [
 [[package]]
 name = "afrim-translator"
 version = "0.2.3"
-source = "git+https://github.com/fodydev/afrim?rev=16ade83#16ade83277f01f3096b3d8e561294681998e3183"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "02857e5fe720e0957279142bfe969fadb865abd68b32b07efedf3e643079e4e0"
 dependencies = [
  "indexmap",
  "rhai",
@@ -66,7 +71,7 @@ dependencies = [
 
 [[package]]
 name = "afrish"
-version = "0.1.0"
+version = "0.1.1"
 
 [[package]]
 name = "ahash"
