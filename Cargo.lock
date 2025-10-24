@@ -72,6 +72,8 @@ dependencies = [
 [[package]]
 name = "afrish"
 version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "efe4b10c8015cb1c022179dd90143125ea93aca51f7e9f92913b8116c982b7a5"
 
 [[package]]
 name = "ahash"
