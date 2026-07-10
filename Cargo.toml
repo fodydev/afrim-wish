@@ -1,6 +1,6 @@
 [package]
 name = "afrim-wish"
-version = "0.4.1"
+version = "0.4.2"
 edition = "2021"
 description = "Afrim Wish is an GUI interface for the afrim ime."
 repository = "https://github.com/fodydev/afrim-wish"
