@@ -13,13 +13,12 @@ keywords = ["afrim", "ime", "typing"]
 [features]
 default = ["strsim", "rhai"]
 strsim = ["afrim/strsim"]
-inhibit = ["afrim/inhibit"]
 rhai = ["afrim/rhai"]
 
 [dependencies]
-afrim = "0.6.2"
-anyhow = "1.0.100"
-clap = "4.5.50"
+afrim = "0.7.0"
+anyhow = "1.0.103"
+clap = "4.6.1"
 afrish = "0.1.1"
 serde = { version = "1.0.228", features = ["serde_derive"] }
-toml = "0.9.8"
+toml = "1.1.2"
